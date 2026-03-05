@@ -1,5 +1,11 @@
-import { ExtensionContext } from "vscode";
+import type { ExtensionContext } from "vscode";
+import * as vscode from "vscode";
+import { ChaiWebviewViewProvider } from "./ChaiWebviewViewProvider";
 
 export async function activate(context: ExtensionContext) {
-  console.log("Activating oxc extension", context);
+  const provider = new ChaiWebviewViewProvider(context.extensionUri);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider("chai-activityBar", provider),
+  );
 }

@@ -9,7 +9,7 @@ const output: RolldownOptions["output"] = {
   banner: `"use strict";\n`,
   minify: true,
   cleanDir: true,
-  file: "out/main.js",
+  file: "dist/main.js",
 };
 
 export default defineConfig({

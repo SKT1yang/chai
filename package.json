@@ -41,7 +41,7 @@
     "url": "git+https://github.com/SKT1yang/chai.git"
   },
   "publisher": "shuiyangsuan",
-  "main": "./out/main.js",
+  "main": "./dist/main.js",
   "scripts": {
     "build": "pnpm run compile && pnpm run package",
     "compile": "rolldown -c rolldown.config.ts",
@@ -67,7 +67,33 @@
     "rolldown": "1.0.0-rc.6",
     "tinyglobby": "^0.2.15"
   },
-  "contributes": {},
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chai-activityBar",
+          "title": "Chai",
+          "icon": "assets/chai.svg"
+        }
+      ]
+    },
+    "views": {
+      "chai-activityBar": [
+        {
+          "type": "webview",
+          "id": "chai-webview",
+          "name": "Chai",
+          "icon": "assets/chai.svg"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "chai.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
   "activationEvents": [],
   "icon": "assets/chai.png",
   "engines": {
