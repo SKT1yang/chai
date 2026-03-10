@@ -53,7 +53,9 @@
     "fmt": "oxfmt --write -c oxfmt.config.json",
     "fmt:check": "oxfmt --check -c oxfmt.config.json"
   },
-  "dependencies": {},
+  "dependencies": {
+    "vscode-uri": "^3.1.0"
+  },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "24.1.0",

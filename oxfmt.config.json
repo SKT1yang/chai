@@ -1,7 +1,12 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "categories": {
-    "correctness": "error",
-    "perf": "error"
-  }
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"categories": {
+		"correctness": "error",
+		"perf": "error"
+	},
+	"tabWidth": 4,
+	"useTabs": true,
+	"endOfLine": "lf",
+	"singleQuote": true,
+	"printWidth": 120
 }
