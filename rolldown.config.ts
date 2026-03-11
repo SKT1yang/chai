@@ -1,7 +1,7 @@
 import { defineConfig, type RolldownOptions } from 'rolldown';
 // import { globSync } from "tinyglobby";
 
-const input: RolldownOptions['input'] = ['src/extension/vscode-node/extension.ts'];
+const input: RolldownOptions['input'] = ['src/extension/extension/vscode-node/extension.ts'];
 
 const output: RolldownOptions['output'] = {
 	sourcemap: true,
