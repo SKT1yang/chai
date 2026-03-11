@@ -85,8 +85,8 @@ export function mixin(destination: any, source: any, overwrite: boolean = true):
 
 	if (isObject(source)) {
 		Object.keys(source).forEach((key) => {
-			const dest = destination as any;
-			const src = source as any;
+			let dest = destination as any;
+			let src = source as any;
 			if (key in destination) {
 				if (overwrite) {
 					if (isObject(dest[key]) && isObject(src[key])) {

@@ -1,5 +1,3 @@
-import * as nls from '../../nls';
-
 export const LANGUAGE_DEFAULT = 'en';
 
 let _isWindows = false;
@@ -81,7 +79,7 @@ if (typeof nodeProcess === 'object') {
 	const rawNlsConfig = nodeProcess.env['VSCODE_NLS_CONFIG'];
 	if (rawNlsConfig) {
 		try {
-			const nlsConfig: nls.INLSConfiguration = JSON.parse(rawNlsConfig);
+			const nlsConfig = JSON.parse(rawNlsConfig);
 			_locale = nlsConfig.userLocale;
 			_platformLocale = nlsConfig.osLocale;
 			_language = nlsConfig.resolvedLanguage || LANGUAGE_DEFAULT;
@@ -107,7 +105,7 @@ else if (typeof navigator === 'object' && !isElectronRenderer) {
 	_isLinux = _userAgent.indexOf('Linux') >= 0;
 	_isMobile = _userAgent?.indexOf('Mobi') >= 0;
 	_isWeb = true;
-	_language = nls.getNLSLanguage() || LANGUAGE_DEFAULT;
+	_language = LANGUAGE_DEFAULT;
 	_locale = navigator.language.toLowerCase();
 	_platformLocale = _locale;
 }
