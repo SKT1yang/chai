@@ -9,7 +9,7 @@ import { ContributionCollection } from '../../common/contributions';
 export async function activate(context: ExtensionContext) {
 	const accessor = new InstantiationServiceBuilder();
 
-	registerServices(accessor);
+	registerServices(accessor, context);
 
 	const instantiationService = accessor.seal();
 	context.subscriptions.push(instantiationService);

@@ -3,7 +3,7 @@ import { ILogTarget } from '../common/logService';
 
 export let outputChannel: OutputChannel;
 
-export const OutputChannelName = 'GitHub Copilot Chat';
+export const OutputChannelName = 'Chai';
 
 export class NewOutputChannelLogTarget implements ILogTarget {
 	private readonly _outputChannel = window.createOutputChannel(OutputChannelName, { log: true });

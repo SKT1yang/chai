@@ -43,7 +43,7 @@
 	"publisher": "shuiyangsuan",
 	"main": "./dist/main.js",
 	"scripts": {
-		"build": "pnpm run compile && pnpm run build:webview && pnpm run package",
+		"build": "pnpm lint && pnpm run compile && pnpm run build:webview && pnpm run package",
 		"compile": "rolldown -c rolldown.config.ts",
 		"watch": "pnpm run compile --watch",
 		"build:webview": "cd webview-ui && pnpm run build",

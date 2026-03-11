@@ -1,7 +1,8 @@
-import { DiffServiceImpl, IDiffService } from '../../../platform/diff/node/diffServiceImpl';
-import { ITokenizerProvider, TokenizerProvider } from '../../../platform/tokenizer/node/tokenizer';
+import { ExtensionContext } from 'vscode';
 import { IInstantiationServiceBuilder } from '../../../util/vs/instantiation/common/services';
 import { SyncDescriptor } from '../../../util/vs/instantiation/common/descriptors';
+import { ILogService, LogServiceImpl } from '../../../platform/log/common/logService';
+import { NewOutputChannelLogTarget } from '../../../platform/log/vscode/outputChannelLogTarget';
 
 // ###########################################################################################
 // ###                                                                                     ###
@@ -11,7 +12,9 @@ import { SyncDescriptor } from '../../../util/vs/instantiation/common/descriptor
 // ###                                                                                     ###
 // ###########################################################################################
 
-export function registerServices(builder: IInstantiationServiceBuilder): void {
-	builder.define(IDiffService, new DiffServiceImpl());
-	builder.define(ITokenizerProvider, new SyncDescriptor(TokenizerProvider, [true]));
+export function registerServices(builder: IInstantiationServiceBuilder, extensionContext: ExtensionContext): void {
+	builder.define(
+		ILogService,
+		new SyncDescriptor(LogServiceImpl, [[new NewOutputChannelLogTarget(extensionContext)]]),
+	);
 }
