@@ -43,9 +43,10 @@
 	"publisher": "shuiyangsuan",
 	"main": "./dist/main.js",
 	"scripts": {
-		"build": "pnpm run compile && pnpm run package",
+		"build": "pnpm run compile && pnpm run build:webview && pnpm run package",
 		"compile": "rolldown -c rolldown.config.ts",
 		"watch": "pnpm run compile --watch",
+		"build:webview": "cd webview-ui && pnpm run build",
 		"package": "vsce package --no-dependencies -o chai.vsix",
 		"package:pre-release": "vsce package --no-dependencies --pre-release -o chai.vsix",
 		"install-extension": "code --install-extension chai.vsix --force",
@@ -103,6 +104,10 @@
 	},
 	"packageManager": "pnpm@10.30.2",
 	"vsce": {
-		"dependencies": false
+		"dependencies": false,
+		"files": [
+			"dist",
+			"assets"
+		]
 	}
 }

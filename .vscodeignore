@@ -1,6 +1,6 @@
 **
 !assets/chai.png
 !LICENSE
-!dist/main.js
+!dist/**/*
 !package.json
 !README.md

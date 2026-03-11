@@ -19,14 +19,36 @@ export class ChaiWebviewViewProvider implements vscode.WebviewViewProvider {
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview): string {
-		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'style.css'));
+		// 获取 webview-ui 构建文件的 URI
+		const scriptUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview-ui', 'assets', 'index.js'),
+		);
+		const styleUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview-ui', 'assets', 'index.css'),
+		);
+
+		// 设置 Content Security Policy
+		const cspSource = webview.cspSource;
+		const contentSecurityPolicy = `
+			default-src 'none';
+			style-src ${cspSource} 'unsafe-inline';
+			script-src ${cspSource} 'unsafe-inline';
+			font-src ${cspSource};
+			img-src ${cspSource} https:;
+		`;
+
 		return `<!DOCTYPE html>
-      <html>
+      <html lang="en">
         <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}">
           <link rel="stylesheet" type="text/css" href="${styleUri.toString()}">
+          <title>Chai</title>
         </head>
         <body>
-          <h1>Hello from Webview View!</h1>
+          <div id="root"></div>
+          <script type="module" src="${scriptUri.toString()}"></script>
         </body>
       </html>`;
 	}
