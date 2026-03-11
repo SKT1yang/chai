@@ -16,7 +16,7 @@ export async function activate(context: ExtensionContext) {
 
 	const provider = new ChaiWebviewViewProvider(context.extensionUri);
 
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider('chai-activityBar', provider));
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider('chai', provider));
 
 	await instantiationService.invokeFunction(async () => {
 		const contributions = instantiationService.createInstance(ContributionCollection, vscodeNodeContributions);

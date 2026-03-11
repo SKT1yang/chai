@@ -7,7 +7,7 @@ const output: RolldownOptions['output'] = {
 	sourcemap: true,
 	format: 'cjs',
 	banner: `"use strict";\n`,
-	minify: true,
+	minify: false,
 	cleanDir: true,
 	file: 'dist/main.js',
 };
