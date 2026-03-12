@@ -43,10 +43,12 @@
 	"publisher": "shuiyangsuan",
 	"main": "./dist/main.js",
 	"scripts": {
-		"build": "pnpm lint && pnpm run compile && pnpm run build:webview && pnpm run package",
+		"dev": "pnpm lint && pnpm watch && pnpm dev:webview",
+		"build": "pnpm lint && pnpm compile && pnpm build:webview && pnpm package",
 		"compile": "rolldown -c rolldown.config.ts",
-		"watch": "pnpm run compile --watch",
-		"build:webview": "cd webview-ui && pnpm run build",
+		"watch": "pnpm compile --watch",
+		"build:dev": "cd webview-ui && pnpm dev",
+		"build:webview": "cd webview-ui && pnpm build",
 		"package": "vsce package --no-dependencies -o chai.vsix",
 		"package:pre-release": "vsce package --no-dependencies --pre-release -o chai.vsix",
 		"install-extension": "code --install-extension chai.vsix --force",
@@ -56,6 +58,7 @@
 	},
 	"dependencies": {
 		"@vscode/prompt-tsx": "0.4.0-alpha.7",
+		"axios": "^1.13.6",
 		"vscode-uri": "^3.1.0"
 	},
 	"devDependencies": {
@@ -86,16 +89,12 @@
 				{
 					"id": "chai",
 					"type": "webview",
-					"name": "Chai"
+					"name": "Chai",
+					"icon": "assets/chai.svg"
 				}
 			]
 		},
-		"commands": [
-			{
-				"command": "chai.helloWorld",
-				"title": "Hello World"
-			}
-		]
+		"commands": []
 	},
 	"activationEvents": [],
 	"icon": "assets/chai.png",
@@ -104,10 +103,6 @@
 	},
 	"packageManager": "pnpm@10.30.2",
 	"vsce": {
-		"dependencies": false,
-		"files": [
-			"dist",
-			"assets"
-		]
+		"dependencies": false
 	}
 }

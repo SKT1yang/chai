@@ -3,6 +3,7 @@ import { IInstantiationServiceBuilder } from '../../../util/vs/instantiation/com
 import { SyncDescriptor } from '../../../util/vs/instantiation/common/descriptors';
 import { ILogService, LogServiceImpl } from '../../../platform/log/common/logService';
 import { NewOutputChannelLogTarget } from '../../../platform/log/vscode/outputChannelLogTarget';
+import { IVSCodeExtensionContext } from '../../../platform/extContext/common/extensionContext';
 
 // ###########################################################################################
 // ###                                                                                     ###
@@ -17,4 +18,6 @@ export function registerServices(builder: IInstantiationServiceBuilder, extensio
 		ILogService,
 		new SyncDescriptor(LogServiceImpl, [[new NewOutputChannelLogTarget(extensionContext)]]),
 	);
+
+	builder.define(IVSCodeExtensionContext, <any>/*force _serviceBrand*/ extensionContext);
 }

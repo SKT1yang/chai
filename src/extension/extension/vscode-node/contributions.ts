@@ -1,5 +1,5 @@
 import { IExtensionContributionFactory, asContributionFactory } from '../../common/contributions';
-import { RemoteAgentContribution } from '../../conversation/vscode-node/remoteAgents';
+import { WebviewContribution } from '../../webview/vscode-node/WebviewContribution';
 
 // ###################################################################################################
 // ###                                                                                             ###
@@ -9,6 +9,4 @@ import { RemoteAgentContribution } from '../../conversation/vscode-node/remoteAg
 // ###                                                                                             ###
 // ###################################################################################################
 
-export const vscodeNodeContributions: IExtensionContributionFactory[] = [
-	asContributionFactory(RemoteAgentContribution),
-];
+export const vscodeNodeContributions: IExtensionContributionFactory[] = [asContributionFactory(WebviewContribution)];

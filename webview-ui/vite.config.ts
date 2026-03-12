@@ -17,4 +17,15 @@ export default defineConfig({
 			},
 		},
 	},
+	server: {
+		hmr: {
+			host: 'localhost',
+			protocol: 'ws',
+		},
+		cors: {
+			origin: '*',
+			methods: '*',
+			allowedHeaders: '*',
+		},
+	},
 });

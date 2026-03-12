@@ -1,0 +1,139 @@
+import type { ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
+import axios from 'axios';
+import { getUri } from '../vscode/getUri';
+import { getNonce } from '../common/getNonce';
+
+export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
+	constructor(private readonly extensionContext: ExtensionContext) {}
+
+	public async resolveWebviewView(
+		webviewView: vscode.WebviewView,
+		// context: vscode.WebviewViewResolveContext,
+		// token: vscode.CancellationToken,
+	) {
+		// 配置 Webview 选项
+		webviewView.webview.options = {
+			enableScripts: true, // 允许 JavaScript
+			localResourceRoots: [this.extensionContext.extensionUri], // 允许加载扩展内的本地资源
+		};
+
+		// 设置 HTML 内容（可以从文件读取或直接写字符串）
+		webviewView.webview.html =
+			this.extensionContext.extensionMode === vscode.ExtensionMode.Development
+				? await this.getHMRHtmlContent(webviewView.webview)
+				: this.getHtmlContent(webviewView.webview);
+
+		await this.getHMRHtmlContent(webviewView.webview);
+	}
+
+	private getHtmlContent(webview: vscode.Webview): string {
+		// 获取 webview-ui 构建文件的 URI
+		const scriptUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.extensionContext.extensionUri, 'dist', 'webview-ui', 'assets', 'index.js'),
+		);
+		const styleUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.extensionContext.extensionUri, 'dist', 'webview-ui', 'assets', 'index.css'),
+		);
+
+		// 设置 Content Security Policy
+		const cspSource = webview.cspSource;
+		const contentSecurityPolicy = `
+			default-src 'none';
+			style-src ${cspSource} 'unsafe-inline';
+			script-src ${cspSource} 'unsafe-inline';
+			font-src ${cspSource};
+			img-src ${cspSource} https:;
+		`;
+
+		return `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}">
+          <link rel="stylesheet" type="text/css" href="${styleUri.toString()}">
+          <title>Chai</title>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="module" src="${scriptUri.toString()}"></script>
+        </body>
+      </html>`;
+	}
+
+	private async getHMRHtmlContent(webview: vscode.Webview): Promise<string> {
+		let localPort = '5173';
+
+		const localServerUrl = `localhost:${localPort}`;
+
+		// Check if local dev server is running.
+		try {
+			await axios.get(`http://${localServerUrl}`);
+		} catch (error) {
+			vscode.window.showErrorMessage('[error] Local dev server not running' + JSON.stringify(error));
+			return this.getHtmlContent(webview);
+		}
+
+		const nonce = getNonce();
+
+		const stylesUri = getUri(webview, this.extensionContext.extensionUri, [
+			'webview-ui',
+			'build',
+			'assets',
+			'index.css',
+		]);
+
+		const materialIconsUri = getUri(webview, this.extensionContext.extensionUri, [
+			'assets',
+			'vscode-material-icons',
+			'icons',
+		]);
+		const imagesUri = getUri(webview, this.extensionContext.extensionUri, ['assets', 'images']);
+		const audioUri = getUri(webview, this.extensionContext.extensionUri, ['webview-ui', 'audio']);
+
+		const file = 'src/index.tsx';
+		const scriptUri = `http://${localServerUrl}/${file}`;
+
+		const reactRefresh = /*html*/ `
+			<script nonce="${nonce}" type="module">
+				import RefreshRuntime from "http://localhost:${localPort}/@react-refresh"
+				RefreshRuntime.injectIntoGlobalHook(window)
+				window.$RefreshReg$ = () => {}
+				window.$RefreshSig$ = () => (type) => type
+				window.__vite_plugin_react_preamble_installed__ = true
+			</script>
+		`;
+
+		const csp = [
+			"default-src 'none'",
+			`font-src ${webview.cspSource} data:`,
+			`style-src ${webview.cspSource} 'unsafe-inline' https://* http://${localServerUrl} http://0.0.0.0:${localPort}`,
+			`media-src ${webview.cspSource}`,
+			`script-src 'unsafe-eval' ${webview.cspSource} https://* https://*.posthog.com http://${localServerUrl} http://0.0.0.0:${localPort} 'nonce-${nonce}'`,
+		];
+
+		return /*html*/ `
+			<!DOCTYPE html>
+			<html lang="en">
+				<head>
+					<meta charset="utf-8">
+					<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+					<meta http-equiv="Content-Security-Policy" content="${csp.join('; ')}">
+					<link rel="stylesheet" type="text/css" href="${stylesUri.toString()}">
+					<script nonce="${nonce}">
+						window.IMAGES_BASE_URI = "${imagesUri.toString()}"
+						window.AUDIO_BASE_URI = "${audioUri.toString()}"
+						window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri.toString()}"
+					</script>
+					<title>Roo Code</title>
+				</head>
+				<body>
+					<div id="root"></div>
+					${reactRefresh}
+					<script type="module" src="${scriptUri}"></script>
+				</body>
+			</html>
+		`;
+	}
+}
