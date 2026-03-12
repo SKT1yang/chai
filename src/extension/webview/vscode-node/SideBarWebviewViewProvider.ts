@@ -93,7 +93,8 @@ export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
 			`font-src ${webview.cspSource} data:`,
 			`style-src ${webview.cspSource} 'unsafe-inline' https://* ${localServerUrl} http://0.0.0.0:${localPort}`,
 			`media-src ${webview.cspSource}`,
-			`script-src 'unsafe-eval' ${webview.cspSource} https://* https://*.posthog.com ${localServerUrl} http://0.0.0.0:${localPort} 'nonce-${nonce}'`,
+			`script-src 'unsafe-eval' 'unsafe-inline' ${webview.cspSource} https://* https://*.posthog.com ${localServerUrl} http://0.0.0.0:${localPort} 'nonce-${nonce}'`,
+			`connect-src ${webview.cspSource} https://* ${localServerUrl.replace('http', 'ws')} ws://localhost:${localPort} wss://localhost:${localPort}`,
 		];
 
 		return /*html*/ `
