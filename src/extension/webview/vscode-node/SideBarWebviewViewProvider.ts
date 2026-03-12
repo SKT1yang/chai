@@ -1,7 +1,6 @@
 import type { ExtensionContext } from 'vscode';
 import * as vscode from 'vscode';
 import axios from 'axios';
-import { getUri } from '../vscode/getUri';
 import { getNonce } from '../common/getNonce';
 
 export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
@@ -64,36 +63,20 @@ export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
 
 	private async getHMRHtmlContent(webview: vscode.Webview): Promise<string> {
 		let localPort = '5173';
-
-		const localServerUrl = `localhost:${localPort}`;
+		let protocol = 'http';
+		const localServerUrl = `${protocol}://localhost:${localPort}`;
 
 		// Check if local dev server is running.
 		try {
-			await axios.get(`http://${localServerUrl}`);
+			await axios.get(`${localServerUrl}`);
 		} catch (error) {
 			vscode.window.showErrorMessage('[error] Local dev server not running' + JSON.stringify(error));
 			return this.getHtmlContent(webview);
 		}
 
 		const nonce = getNonce();
-
-		const stylesUri = getUri(webview, this.extensionContext.extensionUri, [
-			'webview-ui',
-			'build',
-			'assets',
-			'index.css',
-		]);
-
-		const materialIconsUri = getUri(webview, this.extensionContext.extensionUri, [
-			'assets',
-			'vscode-material-icons',
-			'icons',
-		]);
-		const imagesUri = getUri(webview, this.extensionContext.extensionUri, ['assets', 'images']);
-		const audioUri = getUri(webview, this.extensionContext.extensionUri, ['webview-ui', 'audio']);
-
-		const file = 'src/index.tsx';
-		const scriptUri = `http://${localServerUrl}/${file}`;
+		const scriptUri = `${localServerUrl}/src/main.tsx`;
+		const stylesUri = `${localServerUrl}/src/index.css`;
 
 		const reactRefresh = /*html*/ `
 			<script nonce="${nonce}" type="module">
@@ -108,9 +91,9 @@ export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
 		const csp = [
 			"default-src 'none'",
 			`font-src ${webview.cspSource} data:`,
-			`style-src ${webview.cspSource} 'unsafe-inline' https://* http://${localServerUrl} http://0.0.0.0:${localPort}`,
+			`style-src ${webview.cspSource} 'unsafe-inline' https://* ${localServerUrl} http://0.0.0.0:${localPort}`,
 			`media-src ${webview.cspSource}`,
-			`script-src 'unsafe-eval' ${webview.cspSource} https://* https://*.posthog.com http://${localServerUrl} http://0.0.0.0:${localPort} 'nonce-${nonce}'`,
+			`script-src 'unsafe-eval' ${webview.cspSource} https://* https://*.posthog.com ${localServerUrl} http://0.0.0.0:${localPort} 'nonce-${nonce}'`,
 		];
 
 		return /*html*/ `
@@ -121,12 +104,7 @@ export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
 					<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 					<meta http-equiv="Content-Security-Policy" content="${csp.join('; ')}">
 					<link rel="stylesheet" type="text/css" href="${stylesUri.toString()}">
-					<script nonce="${nonce}">
-						window.IMAGES_BASE_URI = "${imagesUri.toString()}"
-						window.AUDIO_BASE_URI = "${audioUri.toString()}"
-						window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri.toString()}"
-					</script>
-					<title>Roo Code</title>
+					<title>Chai</title>
 				</head>
 				<body>
 					<div id="root"></div>
