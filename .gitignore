@@ -8,4 +8,7 @@ dist/
 # Turborepo
 .turbo
 
+# IDE
+.idea
+
 .DS_Store
