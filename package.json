@@ -1,108 +1,22 @@
 {
-	"name": "chai",
-	"displayName": "Chai",
-	"version": "0.0.1",
-	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
-	"categories": [
-		"AI",
-		"Chat",
-		"Machine Learning",
-		"Programming Languages"
-	],
-	"keywords": [
-		"ai",
-		"autocomplete",
-		"c#",
-		"c++",
-		"chai",
-		"chat",
-		"codex",
-		"documentation",
-		"go",
-		"golang",
-		"intellisense",
-		"java",
-		"javascript",
-		"kotlin",
-		"openai",
-		"php",
-		"python",
-		"refactor",
-		"ruby",
-		"snippets",
-		"typescript"
-	],
-	"bugs": {
-		"url": "https://github.com/SKT1yang/chai/issues"
-	},
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/SKT1yang/chai.git"
-	},
-	"publisher": "shuiyangsuan",
-	"main": "./dist/main.js",
+	"name": "chai-workspace",
+	"private": true,
 	"scripts": {
-		"dev": "pnpm lint && pnpm watch && pnpm dev:webview",
-		"build": "pnpm lint && pnpm compile && pnpm build:webview && pnpm package",
-		"compile": "rolldown -c rolldown.config.ts",
-		"watch": "pnpm compile --watch",
-		"build:dev": "cd webview-ui && pnpm dev",
-		"build:webview": "cd webview-ui && pnpm build",
-		"package": "vsce package --no-dependencies -o chai.vsix",
-		"package:pre-release": "vsce package --no-dependencies --pre-release -o chai.vsix",
-		"install-extension": "code --install-extension chai.vsix --force",
+		"build:vscode": "bun scripts/build-vscode.ts",
+		"clean": "by delete",
 		"lint": "oxlint --type-check --type-aware -c oxlint.config.json",
 		"fmt": "oxfmt --write -c oxfmt.config.json",
 		"fmt:check": "oxfmt --check -c oxfmt.config.json"
 	},
-	"dependencies": {
-		"@vscode/prompt-tsx": "0.4.0-alpha.7",
-		"axios": "^1.13.6",
-		"vscode-uri": "^3.1.0"
-	},
 	"devDependencies": {
-		"@types/mocha": "^10.0.10",
-		"@types/node": "24.1.0",
-		"@types/vscode": "1.109.0",
-		"@vscode/vsce": "^3.7.1",
-		"cross-env": "^10.1.0",
-		"ovsx": "^0.10.9",
-		"oxfmt": "latest",
-		"oxlint": "latest",
-		"oxlint-tsgolint": "^0.16.0",
-		"rolldown": "1.0.0-rc.6",
-		"tinyglobby": "^0.2.15"
+		"@shuiyangsuan/cli": "0.0.6",
+		"@types/bun": "1.3.10",
+		"@types/node": "25.5.0",
+		"bun": "1.3.10",
+		"oxfmt": "0.40.0",
+		"oxlint": "1.55.0",
+		"oxlint-tsgolint": "0.16.0",
+		"turbo": "2.8.16"
 	},
-	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "chai",
-					"title": "Chai",
-					"icon": "assets/chai.svg"
-				}
-			]
-		},
-		"views": {
-			"chai": [
-				{
-					"id": "chai",
-					"type": "webview",
-					"name": "Chai",
-					"icon": "assets/chai.svg"
-				}
-			]
-		},
-		"commands": []
-	},
-	"activationEvents": [],
-	"icon": "assets/chai.png",
-	"engines": {
-		"vscode": "^1.109.0"
-	},
-	"packageManager": "pnpm@10.30.2",
-	"vsce": {
-		"dependencies": false
-	}
+	"packageManager": "pnpm@10.28.0"
 }

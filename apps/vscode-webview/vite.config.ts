@@ -7,7 +7,7 @@ export default defineConfig({
 	plugins: [react()],
 	base: '',
 	build: {
-		outDir: path.resolve(__dirname, '../dist/webview-ui'),
+		outDir: path.resolve(__dirname, '../vscode-extension/dist/webview'),
 		emptyOutDir: true,
 		rollupOptions: {
 			output: {
