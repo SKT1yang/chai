@@ -1,8 +1,9 @@
 packages:
-  - apps/*
-  - packages/*
+    - apps/*
+    - packages/*
+# catelog:
 
 onlyBuiltDependencies:
-  - '@vscode/vsce-sign'
-  - bun
-  - keytar
+    - '@vscode/vsce-sign'
+    - bun
+    - keytar
