@@ -1,7 +1,12 @@
 packages:
     - apps/*
     - packages/*
-# catelog:
+
+catalog:
+    typescript: 5.9.3
+    '@tsconfig/strictest': 2.0.8
+    '@tsconfig/vite-react': 7.0.2
+    '@types/node': 25.5.0
 
 onlyBuiltDependencies:
     - '@vscode/vsce-sign'

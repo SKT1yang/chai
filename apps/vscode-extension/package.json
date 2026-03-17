@@ -56,7 +56,8 @@
 	},
 	"devDependencies": {
 		"@chai/webview": "workspace:",
-		"@types/node": "24.1.0",
+		"@tsconfig/strictest": "catalog:",
+		"@types/node": "catalog:",
 		"@types/vscode": "1.109.0",
 		"@vscode/vsce": "3.7.1",
 		"cross-env": "10.1.0",
