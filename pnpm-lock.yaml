@@ -11,6 +11,9 @@ importers:
       '@shuiyangsuan/cli':
         specifier: 0.0.6
         version: 0.0.6
+      '@tsconfig/strictest':
+        specifier: ^2.0.8
+        version: 2.0.8
       '@types/bun':
         specifier: 1.3.10
         version: 1.3.10
@@ -45,6 +48,9 @@ importers:
         specifier: 3.1.0
         version: 3.1.0
     devDependencies:
+      '@chai/webview':
+        specifier: 'workspace:'
+        version: link:../vscode-webview
       '@types/node':
         specifier: 24.1.0
         version: 24.1.0
@@ -1229,6 +1235,9 @@ packages:
 
   '@textlint/types@15.5.2':
     resolution: {integrity: sha512-sJOrlVLLXp4/EZtiWKWq9y2fWyZlI8GP+24rnU5avtPWBIMm/1w97yzKrAqYF8czx2MqR391z5akhnfhj2f/AQ==}
+
+  '@tsconfig/strictest@2.0.8':
+    resolution: {integrity: sha512-XnQ7vNz5HRN0r88GYf1J9JJjqtZPiHt2woGJOo2dYqyHGGcd6OLGqSlBB6p1j9mpzja6Oe5BoPqWmeDx6X9rLw==}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -3956,6 +3965,8 @@ snapshots:
   '@textlint/types@15.5.2':
     dependencies:
       '@textlint/ast-node-types': 15.5.2
+
+  '@tsconfig/strictest@2.0.8': {}
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
