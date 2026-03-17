@@ -1,35 +1,35 @@
-export type DebugLocation = DebugLocationImpl | undefined;
+export type DebugLocation = DebugLocationImpl | undefined
 
 export namespace DebugLocation {
-	let enabled = false;
+	let enabled = false
 
 	export function enable(): void {
-		enabled = true;
+		enabled = true
 	}
 
 	export function ofCaller(): DebugLocation {
 		if (!enabled) {
-			return undefined;
+			return undefined
 		}
-		const Err = Error as ErrorConstructor & { stackTraceLimit: number };
+		const Err = Error as ErrorConstructor & { stackTraceLimit: number }
 
-		const l = Err.stackTraceLimit;
-		Err.stackTraceLimit = 3;
-		const stack = new Error().stack!;
-		Err.stackTraceLimit = l;
+		const l = Err.stackTraceLimit
+		Err.stackTraceLimit = 3
+		const stack = new Error().stack!
+		Err.stackTraceLimit = l
 
-		return DebugLocationImpl.fromStack(stack, 2);
+		return DebugLocationImpl.fromStack(stack, 2)
 	}
 }
 
 class DebugLocationImpl implements ILocation {
 	public static fromStack(stack: string, parentIdx: number): DebugLocationImpl | undefined {
-		const lines = stack.split('\n');
-		const location = parseLine(lines[parentIdx + 1]);
+		const lines = stack.split('\n')
+		const location = parseLine(lines[parentIdx + 1])
 		if (location) {
-			return new DebugLocationImpl(location.fileName, location.line, location.column, location.id);
+			return new DebugLocationImpl(location.fileName, location.line, location.column, location.id)
 		} else {
-			return undefined;
+			return undefined
 		}
 	}
 
@@ -42,24 +42,24 @@ class DebugLocationImpl implements ILocation {
 }
 
 export interface ILocation {
-	fileName: string;
-	line: number;
-	column: number;
-	id: string;
+	fileName: string
+	line: number
+	column: number
+	id: string
 }
 
 function parseLine(stackLine: string): ILocation | undefined {
-	const match = stackLine.match(/\((.*):(\d+):(\d+)\)/);
+	const match = stackLine.match(/\((.*):(\d+):(\d+)\)/)
 	if (match) {
 		return {
 			fileName: match[1],
 			line: parseInt(match[2]),
 			column: parseInt(match[3]),
 			id: stackLine,
-		};
+		}
 	}
 
-	const match2 = stackLine.match(/at ([^()]*):(\d+):(\d+)/);
+	const match2 = stackLine.match(/at ([^()]*):(\d+):(\d+)/)
 
 	if (match2) {
 		return {
@@ -67,8 +67,8 @@ function parseLine(stackLine: string): ILocation | undefined {
 			line: parseInt(match2[2]),
 			column: parseInt(match2[3]),
 			id: stackLine,
-		};
+		}
 	}
 
-	return undefined;
+	return undefined
 }

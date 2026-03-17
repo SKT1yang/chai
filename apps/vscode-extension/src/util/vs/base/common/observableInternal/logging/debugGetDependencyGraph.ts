@@ -1,28 +1,28 @@
-import { IObservable, IObserver } from '../base';
-import { Derived } from '../observables/derivedImpl';
-import { FromEventObservable } from '../observables/observableFromEvent';
-import { ObservableValue } from '../observables/observableValue';
-import { AutorunObserver } from '../reactions/autorunImpl';
-import { formatValue } from './consoleObservableLogger';
+import { IObservable, IObserver } from '../base'
+import { Derived } from '../observables/derivedImpl'
+import { FromEventObservable } from '../observables/observableFromEvent'
+import { ObservableValue } from '../observables/observableValue'
+import { AutorunObserver } from '../reactions/autorunImpl'
+import { formatValue } from './consoleObservableLogger'
 
 interface IOptions {
-	type: 'dependencies' | 'observers';
-	debugNamePostProcessor?: (name: string) => string;
+	type: 'dependencies' | 'observers'
+	debugNamePostProcessor?: (name: string) => string
 }
 
 export function debugGetObservableGraph(obs: IObservable<any> | IObserver, options: IOptions): string {
-	const debugNamePostProcessor = options?.debugNamePostProcessor ?? ((str: string) => str);
-	const info = Info.from(obs, debugNamePostProcessor);
+	const debugNamePostProcessor = options?.debugNamePostProcessor ?? ((str: string) => str)
+	const info = Info.from(obs, debugNamePostProcessor)
 	if (!info) {
-		return '';
+		return ''
 	}
 
-	const alreadyListed = new Set<IObservable<any> | IObserver>();
+	const alreadyListed = new Set<IObservable<any> | IObserver>()
 
 	if (options.type === 'observers') {
-		return formatObservableInfoWithObservers(info, 0, alreadyListed, options).trim();
+		return formatObservableInfoWithObservers(info, 0, alreadyListed, options).trim()
 	} else {
-		return formatObservableInfoWithDependencies(info, 0, alreadyListed, options).trim();
+		return formatObservableInfoWithDependencies(info, 0, alreadyListed, options).trim()
 	}
 }
 
@@ -32,30 +32,30 @@ function formatObservableInfoWithDependencies(
 	alreadyListed: Set<IObservable<any> | IObserver>,
 	options: IOptions,
 ): string {
-	const indent = '\t\t'.repeat(indentLevel);
-	const lines: string[] = [];
+	const indent = '\t\t'.repeat(indentLevel)
+	const lines: string[] = []
 
-	const isAlreadyListed = alreadyListed.has(info.sourceObj);
+	const isAlreadyListed = alreadyListed.has(info.sourceObj)
 	if (isAlreadyListed) {
-		lines.push(`${indent}* ${info.type} ${info.name} (already listed)`);
-		return lines.join('\n');
+		lines.push(`${indent}* ${info.type} ${info.name} (already listed)`)
+		return lines.join('\n')
 	}
 
-	alreadyListed.add(info.sourceObj);
+	alreadyListed.add(info.sourceObj)
 
-	lines.push(`${indent}* ${info.type} ${info.name}:`);
-	lines.push(`${indent}  value: ${formatValue(info.value, 50)}`);
-	lines.push(`${indent}  state: ${info.state}`);
+	lines.push(`${indent}* ${info.type} ${info.name}:`)
+	lines.push(`${indent}  value: ${formatValue(info.value, 50)}`)
+	lines.push(`${indent}  state: ${info.state}`)
 
 	if (info.dependencies.length > 0) {
-		lines.push(`${indent}  dependencies:`);
+		lines.push(`${indent}  dependencies:`)
 		for (const dep of info.dependencies) {
-			const info = Info.from(dep, options.debugNamePostProcessor ?? ((name) => name)) ?? Info.unknown(dep);
-			lines.push(formatObservableInfoWithDependencies(info, indentLevel + 1, alreadyListed, options));
+			const info = Info.from(dep, options.debugNamePostProcessor ?? ((name) => name)) ?? Info.unknown(dep)
+			lines.push(formatObservableInfoWithDependencies(info, indentLevel + 1, alreadyListed, options))
 		}
 	}
 
-	return lines.join('\n');
+	return lines.join('\n')
 }
 
 function formatObservableInfoWithObservers(
@@ -64,31 +64,31 @@ function formatObservableInfoWithObservers(
 	alreadyListed: Set<IObservable<any> | IObserver>,
 	options: IOptions,
 ): string {
-	const indent = '\t\t'.repeat(indentLevel);
-	const lines: string[] = [];
+	const indent = '\t\t'.repeat(indentLevel)
+	const lines: string[] = []
 
-	const isAlreadyListed = alreadyListed.has(info.sourceObj);
+	const isAlreadyListed = alreadyListed.has(info.sourceObj)
 	if (isAlreadyListed) {
-		lines.push(`${indent}* ${info.type} ${info.name} (already listed)`);
-		return lines.join('\n');
+		lines.push(`${indent}* ${info.type} ${info.name} (already listed)`)
+		return lines.join('\n')
 	}
 
-	alreadyListed.add(info.sourceObj);
+	alreadyListed.add(info.sourceObj)
 
-	lines.push(`${indent}* ${info.type} ${info.name}:`);
-	lines.push(`${indent}  value: ${formatValue(info.value, 50)}`);
-	lines.push(`${indent}  state: ${info.state}`);
+	lines.push(`${indent}* ${info.type} ${info.name}:`)
+	lines.push(`${indent}  value: ${formatValue(info.value, 50)}`)
+	lines.push(`${indent}  state: ${info.state}`)
 
 	if (info.observers.length > 0) {
-		lines.push(`${indent}  observers:`);
+		lines.push(`${indent}  observers:`)
 		for (const observer of info.observers) {
 			const info =
-				Info.from(observer, options.debugNamePostProcessor ?? ((name) => name)) ?? Info.unknown(observer);
-			lines.push(formatObservableInfoWithObservers(info, indentLevel + 1, alreadyListed, options));
+				Info.from(observer, options.debugNamePostProcessor ?? ((name) => name)) ?? Info.unknown(observer)
+			lines.push(formatObservableInfoWithObservers(info, indentLevel + 1, alreadyListed, options))
 		}
 	}
 
-	return lines.join('\n');
+	return lines.join('\n')
 }
 
 class Info {
@@ -97,7 +97,7 @@ class Info {
 		debugNamePostProcessor: (name: string) => string,
 	): Info | undefined {
 		if (obs instanceof AutorunObserver) {
-			const state = obs.debugGetState();
+			const state = obs.debugGetState()
 			return new Info(
 				obs,
 				debugNamePostProcessor(obs.debugName),
@@ -106,9 +106,9 @@ class Info {
 				state.stateStr,
 				Array.from(state.dependencies),
 				[],
-			);
+			)
 		} else if (obs instanceof Derived) {
-			const state = obs.debugGetState();
+			const state = obs.debugGetState()
 			return new Info(
 				obs,
 				debugNamePostProcessor(obs.debugName),
@@ -117,9 +117,9 @@ class Info {
 				state.stateStr,
 				Array.from(state.dependencies),
 				Array.from(obs.debugGetObservers()),
-			);
+			)
 		} else if (obs instanceof ObservableValue) {
-			const state = obs.debugGetState();
+			const state = obs.debugGetState()
 			return new Info(
 				obs,
 				debugNamePostProcessor(obs.debugName),
@@ -128,9 +128,9 @@ class Info {
 				'upToDate',
 				[],
 				Array.from(obs.debugGetObservers()),
-			);
+			)
 		} else if (obs instanceof FromEventObservable) {
-			const state = obs.debugGetState();
+			const state = obs.debugGetState()
 			return new Info(
 				obs,
 				debugNamePostProcessor(obs.debugName),
@@ -139,13 +139,13 @@ class Info {
 				state.hasValue ? 'upToDate' : 'initial',
 				[],
 				Array.from(obs.debugGetObservers()),
-			);
+			)
 		}
-		return undefined;
+		return undefined
 	}
 
 	public static unknown(obs: IObservable<any> | IObserver): Info {
-		return new Info(obs, '(unknown)', 'unknown', undefined, 'unknown', [], []);
+		return new Info(obs, '(unknown)', 'unknown', undefined, 'unknown', [], [])
 	}
 
 	constructor(

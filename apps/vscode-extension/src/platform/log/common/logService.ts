@@ -1,7 +1,7 @@
-import { createDecorator as createServiceIdentifier } from '../../../util/vs/instantiation/common/instantiation';
-import { Disposable } from '../../../util/vs/base/common/lifecycle';
+import { Disposable } from '../../../util/vs/base/common/lifecycle'
+import { createDecorator as createServiceIdentifier } from '../../../util/vs/instantiation/common/instantiation'
 
-export const ILogService = createServiceIdentifier<ILogService>('ILogService');
+export const ILogService = createServiceIdentifier<ILogService>('ILogService')
 
 /**
  * Log levels (taken from vscode.d.ts)
@@ -39,8 +39,8 @@ export enum LogLevel {
 }
 
 export interface ILogTarget {
-	logIt(level: LogLevel, metadataStr: string, ...extra: any[]): void;
-	show?(preserveFocus?: boolean): void;
+	logIt(level: LogLevel, metadataStr: string, ...extra: any[]): void
+	show?(preserveFocus?: boolean): void
 }
 
 /**
@@ -56,7 +56,7 @@ export namespace LogTarget {
 	 * }));
 	 */
 	export function fromCallback(fn: (level: LogLevel, message: string) => void): ILogTarget {
-		return { logIt: fn };
+		return { logIt: fn }
 	}
 }
 
@@ -69,23 +69,23 @@ export class ConsoleLog implements ILogTarget {
 
 	logIt(level: LogLevel, metadataStr: string, ...extra: any[]) {
 		if (this.prefix) {
-			metadataStr = `${this.prefix}${metadataStr}`;
+			metadataStr = `${this.prefix}${metadataStr}`
 		}
 
 		// Note we don't log INFO or DEBUG messages into console.
 		// They are still logged in the output channel.
 		if (level === LogLevel.Error) {
-			console.error(metadataStr, ...extra);
+			console.error(metadataStr, ...extra)
 		} else if (level === LogLevel.Warning) {
-			console.warn(metadataStr, ...extra);
+			console.warn(metadataStr, ...extra)
 		} else if (level >= this.minLogLevel) {
-			console.log(metadataStr, ...extra);
+			console.log(metadataStr, ...extra)
 		}
 	}
 }
 
 export interface ILogService extends ILogger {
-	readonly _serviceBrand: undefined;
+	readonly _serviceBrand: undefined
 }
 
 /**
@@ -93,18 +93,18 @@ export interface ILogService extends ILogger {
  * Args has been ommitted for now in favor of simplifying the interface
  */
 export interface ILogger {
-	trace(message: string): void;
-	debug(message: string): void;
-	info(message: string): void;
-	warn(message: string): void;
+	trace(message: string): void
+	debug(message: string): void
+	info(message: string): void
+	warn(message: string): void
 	/**
 	 * Logs an error message. Prefer this method over `error()` when logging exception details.
 	 *
 	 * @param error The Error object that was thrown
 	 * @param message An optional message for context (e.g. "Request error"). Must not contain customer data. **Do not include stack trace or messages from the error object.**
 	 */
-	error(error: string | Error, message?: string): void;
-	show(preserveFocus?: boolean): void;
+	error(error: string | Error, message?: string): void
+	show(preserveFocus?: boolean): void
 
 	/**
 	 * Creates a sub-logger with a topic prefix. All messages logged through
@@ -117,7 +117,7 @@ export interface ILogger {
 	 *
 	 * @param topic The topic name or array of topic names to prefix messages with
 	 */
-	createSubLogger(topic: string | readonly string[]): ILogger;
+	createSubLogger(topic: string | readonly string[]): ILogger
 
 	/**
 	 * Returns a new logger that also logs to the specified extra target.
@@ -138,50 +138,50 @@ export interface ILogger {
 	 *         logContext.trace(msg);
 	 *     }));
 	 */
-	withExtraTarget(target: ILogTarget): ILogger;
+	withExtraTarget(target: ILogTarget): ILogger
 }
 
 export class LogServiceImpl extends Disposable implements ILogService {
-	declare _serviceBrand: undefined;
+	declare _serviceBrand: undefined
 
-	readonly logger: LoggerImpl;
+	readonly logger: LoggerImpl
 
 	constructor(logTargets: ILogTarget[]) {
-		super();
-		this.logger = new LoggerImpl(logTargets);
+		super()
+		this.logger = new LoggerImpl(logTargets)
 	}
 
 	// Delegate logging methods directly to the internal logger
 	trace(message: string): void {
-		this.logger.trace(message);
+		this.logger.trace(message)
 	}
 
 	debug(message: string): void {
-		this.logger.debug(message);
+		this.logger.debug(message)
 	}
 
 	info(message: string): void {
-		this.logger.info(message);
+		this.logger.info(message)
 	}
 
 	warn(message: string): void {
-		this.logger.warn(message);
+		this.logger.warn(message)
 	}
 
 	error(error: string | Error, message?: string): void {
-		this.logger.error(error, message);
+		this.logger.error(error, message)
 	}
 
 	show(preserveFocus?: boolean): void {
-		this.logger.show(preserveFocus);
+		this.logger.show(preserveFocus)
 	}
 
 	createSubLogger(topic: string | readonly string[]): ILogger {
-		return this.logger.createSubLogger(topic);
+		return this.logger.createSubLogger(topic)
 	}
 
 	withExtraTarget(target: ILogTarget): ILogger {
-		return this.logger.withExtraTarget(target);
+		return this.logger.withExtraTarget(target)
 	}
 }
 
@@ -189,91 +189,91 @@ class LoggerImpl implements ILogger {
 	constructor(private readonly _logTargets: ILogTarget[]) {}
 
 	private _logIt(level: LogLevel, message: string): void {
-		LogMemory.addLog(LogLevel[level], message);
-		this._logTargets.forEach((t) => t.logIt(level, message));
+		LogMemory.addLog(LogLevel[level], message)
+		this._logTargets.forEach((t) => t.logIt(level, message))
 	}
 
 	trace(message: string): void {
-		this._logIt(LogLevel.Trace, message);
+		this._logIt(LogLevel.Trace, message)
 	}
 
 	debug(message: string): void {
-		this._logIt(LogLevel.Debug, message);
+		this._logIt(LogLevel.Debug, message)
 	}
 
 	info(message: string): void {
-		this._logIt(LogLevel.Info, message);
+		this._logIt(LogLevel.Info, message)
 	}
 
 	warn(message: string): void {
-		this._logIt(LogLevel.Warning, message);
+		this._logIt(LogLevel.Warning, message)
 	}
 
 	error(error: string | Error, message?: string): void {
-		this._logIt(LogLevel.Error, collectErrorMessages(error) + (message ? `: ${message}` : ''));
+		this._logIt(LogLevel.Error, collectErrorMessages(error) + (message ? `: ${message}` : ''))
 	}
 
 	show(preserveFocus?: boolean): void {
-		this._logTargets.forEach((t) => t.show?.(preserveFocus));
+		this._logTargets.forEach((t) => t.show?.(preserveFocus))
 	}
 
 	createSubLogger(topic: string | readonly string[]): ILogger {
-		return new SubLogger(this, topic);
+		return new SubLogger(this, topic)
 	}
 
 	withExtraTarget(target: ILogTarget): ILogger {
-		return new LoggerWithExtraTargets(this, [target]);
+		return new LoggerWithExtraTargets(this, [target])
 	}
 }
 
 class SubLogger implements ILogger {
-	private readonly _prefix: string;
+	private readonly _prefix: string
 
 	constructor(
 		private readonly _parent: ILogger,
 		topic: string | readonly string[],
 		existingPrefix?: string,
 	) {
-		const topics = Array.isArray(topic) ? topic : [topic];
-		const newPrefix = topics.map((t) => `[${t}]`).join('');
-		this._prefix = existingPrefix ? existingPrefix + newPrefix : newPrefix;
+		const topics = Array.isArray(topic) ? topic : [topic]
+		const newPrefix = topics.map((t) => `[${t}]`).join('')
+		this._prefix = existingPrefix ? existingPrefix + newPrefix : newPrefix
 	}
 
 	private _prefixMessage(message: string): string {
-		return `${this._prefix} ${message}`;
+		return `${this._prefix} ${message}`
 	}
 
 	trace(message: string): void {
-		this._parent.trace(this._prefixMessage(message));
+		this._parent.trace(this._prefixMessage(message))
 	}
 
 	debug(message: string): void {
-		this._parent.debug(this._prefixMessage(message));
+		this._parent.debug(this._prefixMessage(message))
 	}
 
 	info(message: string): void {
-		this._parent.info(this._prefixMessage(message));
+		this._parent.info(this._prefixMessage(message))
 	}
 
 	warn(message: string): void {
-		this._parent.warn(this._prefixMessage(message));
+		this._parent.warn(this._prefixMessage(message))
 	}
 
 	error(error: string | Error, message?: string): void {
-		const prefixedMessage = message ? this._prefixMessage(message) : this._prefix;
-		this._parent.error(error, prefixedMessage);
+		const prefixedMessage = message ? this._prefixMessage(message) : this._prefix
+		this._parent.error(error, prefixedMessage)
 	}
 
 	show(preserveFocus?: boolean): void {
-		this._parent.show(preserveFocus);
+		this._parent.show(preserveFocus)
 	}
 
 	createSubLogger(topic: string | readonly string[]): ILogger {
-		return new SubLogger(this._parent, topic, this._prefix);
+		return new SubLogger(this._parent, topic, this._prefix)
 	}
 
 	withExtraTarget(target: ILogTarget): ILogger {
-		return new LoggerWithExtraTargets(this, [target], this._prefix);
+		return new LoggerWithExtraTargets(this, [target], this._prefix)
 	}
 }
 
@@ -285,10 +285,10 @@ class LoggerWithExtraTargets implements ILogger {
 	) {}
 
 	private _notifyExtraTargets(level: LogLevel, message: string): void {
-		const prefixedMessage = this._prefix ? `${this._prefix} ${message}` : message;
+		const prefixedMessage = this._prefix ? `${this._prefix} ${message}` : message
 		for (const target of this._extraTargets) {
 			try {
-				target.logIt(level, prefixedMessage);
+				target.logIt(level, prefixedMessage)
 			} catch {
 				// Silent catch - extra targets must not affect primary logging
 			}
@@ -296,38 +296,38 @@ class LoggerWithExtraTargets implements ILogger {
 	}
 
 	trace(message: string): void {
-		this._notifyExtraTargets(LogLevel.Trace, message);
-		this._parent.trace(message);
+		this._notifyExtraTargets(LogLevel.Trace, message)
+		this._parent.trace(message)
 	}
 
 	debug(message: string): void {
-		this._notifyExtraTargets(LogLevel.Debug, message);
-		this._parent.debug(message);
+		this._notifyExtraTargets(LogLevel.Debug, message)
+		this._parent.debug(message)
 	}
 
 	info(message: string): void {
-		this._notifyExtraTargets(LogLevel.Info, message);
-		this._parent.info(message);
+		this._notifyExtraTargets(LogLevel.Info, message)
+		this._parent.info(message)
 	}
 
 	warn(message: string): void {
-		this._notifyExtraTargets(LogLevel.Warning, message);
-		this._parent.warn(message);
+		this._notifyExtraTargets(LogLevel.Warning, message)
+		this._parent.warn(message)
 	}
 
 	error(error: string | Error, message?: string): void {
 		// For extra targets, format a simple message
-		const errorStr = typeof error === 'string' ? error : error.message || 'Error';
-		const fullMessage = message ? `${errorStr}: ${message}` : errorStr;
-		this._notifyExtraTargets(LogLevel.Error, fullMessage);
-		this._parent.error(error, message);
+		const errorStr = typeof error === 'string' ? error : error.message || 'Error'
+		const fullMessage = message ? `${errorStr}: ${message}` : errorStr
+		this._notifyExtraTargets(LogLevel.Error, fullMessage)
+		this._parent.error(error, message)
 	}
 
 	show(preserveFocus?: boolean): void {
-		this._parent.show(preserveFocus);
+		this._parent.show(preserveFocus)
 		for (const target of this._extraTargets) {
 			try {
-				target.show?.(preserveFocus);
+				target.show?.(preserveFocus)
 			} catch {
 				// Silent catch
 			}
@@ -336,26 +336,26 @@ class LoggerWithExtraTargets implements ILogger {
 
 	createSubLogger(topic: string | readonly string[]): ILogger {
 		// Sub-logger inherits extra targets with updated prefix
-		const topics = Array.isArray(topic) ? topic : [topic];
-		const newPrefix = this._prefix + topics.map((t) => `[${t}]`).join('');
-		return new LoggerWithExtraTargets(this._parent.createSubLogger(topic), this._extraTargets, newPrefix);
+		const topics = Array.isArray(topic) ? topic : [topic]
+		const newPrefix = this._prefix + topics.map((t) => `[${t}]`).join('')
+		return new LoggerWithExtraTargets(this._parent.createSubLogger(topic), this._extraTargets, newPrefix)
 	}
 
 	withExtraTarget(target: ILogTarget): ILogger {
-		return new LoggerWithExtraTargets(this._parent, [...this._extraTargets, target], this._prefix);
+		return new LoggerWithExtraTargets(this._parent, [...this._extraTargets, target], this._prefix)
 	}
 }
 
 export function collectErrorMessages(e: any): string {
 	// Collect error messages from nested errors as seen with Node's `fetch`.
-	const seen = new Set<any>();
+	const seen = new Set<any>()
 	function collect(e: any, indent: string): string {
 		if (!e || !['object', 'string'].includes(typeof e) || seen.has(e)) {
-			return '';
+			return ''
 		}
-		seen.add(e);
-		const message = typeof e === 'string' ? e : e.stack || e.message || e.code || e.toString?.() || '';
-		const messageStr = (message.toString?.() as string | undefined) || '';
+		seen.add(e)
+		const message = typeof e === 'string' ? e : e.stack || e.message || e.code || e.toString?.() || ''
+		const messageStr = (message.toString?.() as string | undefined) || ''
 		return [
 			messageStr
 				? `${messageStr
@@ -366,42 +366,42 @@ export function collectErrorMessages(e: any): string {
 			e.chromiumDetails ? `${indent}${JSON.stringify(extractChromiumDetails(e.chromiumDetails))}\n` : '',
 			collect(e.cause, indent + '  '),
 			...(Array.isArray(e.errors) ? e.errors.map((e: any) => collect(e, indent + '  ')) : []),
-		].join('');
+		].join('')
 	}
-	return collect(e, '').trim();
+	return collect(e, '').trim()
 }
 
 export function collectSingleLineErrorMessage(e: any, includeDetails = false): string {
 	// Collect error messages from nested errors as seen with Node's `fetch`.
-	const seen = new Set<any>();
+	const seen = new Set<any>()
 	function collect(e: any): string {
 		if (!e || !['object', 'string'].includes(typeof e) || seen.has(e)) {
-			return '';
+			return ''
 		}
-		seen.add(e);
-		const message = typeof e === 'string' ? e : e.message || e.code || e.toString?.() || '';
-		const messageStr = (message.toString?.() as string | undefined) || '';
-		const messageLine = messageStr.trim().split('\n').join(' ');
+		seen.add(e)
+		const message = typeof e === 'string' ? e : e.message || e.code || e.toString?.() || ''
+		const messageStr = (message.toString?.() as string | undefined) || ''
+		const messageLine = messageStr.trim().split('\n').join(' ')
 		const details = [
 			...(includeDetails && e.chromiumDetails ? [JSON.stringify(extractChromiumDetails(e.chromiumDetails))] : []),
 			...(e.cause ? [collect(e.cause)] : []),
 			...(Array.isArray(e.errors) ? e.errors.map((e: any) => collect(e)) : []),
-		].join(', ');
-		return details ? `${messageLine}: ${details}` : messageLine;
+		].join(', ')
+		return details ? `${messageLine}: ${details}` : messageLine
 	}
-	return collect(e);
+	return collect(e)
 }
 
 function extractChromiumDetails(details: any): any {
 	if (!details || typeof details !== 'object') {
-		return {};
+		return {}
 	}
 
 	if (details.is_request_error !== undefined && details.session_state === undefined) {
 		return {
 			is_request_error: details.is_request_error,
 			network_process_crashed: details.network_process_crashed,
-		};
+		}
 	}
 
 	const extracted: any = {
@@ -417,13 +417,13 @@ function extractChromiumDetails(details: any): any {
 		last_framer_error_details: details.last_framer_error_details,
 		error_source: details.error_source,
 		aliases_length: Array.isArray(details.aliases) ? details.aliases.length : undefined,
-	};
+	}
 
 	if (details.proxy) {
-		const proxyString = String(details.proxy);
-		const proxySchemes = [...proxyString.matchAll(/([a-z][a-z0-9+.-]*):\/\//gi)].map((match) => match[1]);
+		const proxyString = String(details.proxy)
+		const proxySchemes = [...proxyString.matchAll(/([a-z][a-z0-9+.-]*):\/\//gi)].map((match) => match[1])
 		if (proxySchemes.length > 0) {
-			extracted.proxy_schemes = proxySchemes;
+			extracted.proxy_schemes = proxySchemes
 		}
 	}
 
@@ -432,7 +432,7 @@ function extractChromiumDetails(details: any): any {
 			frame_type: details.in_flight_write.frame_type,
 			frame_size: details.in_flight_write.frame_size,
 			remaining_size: details.in_flight_write.remaining_size,
-		};
+		}
 	}
 
 	if (details.buffered_spdy_framer && typeof details.buffered_spdy_framer === 'object') {
@@ -440,11 +440,11 @@ function extractChromiumDetails(details: any): any {
 			frames_received: details.buffered_spdy_framer.frames_received,
 			has_error: details.buffered_spdy_framer.has_error,
 			message_fully_read: details.buffered_spdy_framer.message_fully_read,
-		};
+		}
 	}
 
 	if (details.session_state && typeof details.session_state === 'object') {
-		const state = details.session_state;
+		const state = details.session_state
 		extracted.session_state = {
 			availability_state: state.availability_state,
 			session_send_window: state.session_send_window,
@@ -487,11 +487,11 @@ function extractChromiumDetails(details: any): any {
 			time_since_last_read_ms: state.time_since_last_read_ms,
 			time_since_last_write_ms: state.time_since_last_write_ms,
 			time_since_last_recv_window_update_ms: state.time_since_last_recv_window_update_ms,
-		};
+		}
 	}
 
 	if (details.tls_info && typeof details.tls_info === 'object') {
-		const tls = details.tls_info;
+		const tls = details.tls_info
 		extracted.tls_info = {
 			is_secure_connection: tls.is_secure_connection,
 			ssl_version: tls.ssl_version,
@@ -504,11 +504,11 @@ function extractChromiumDetails(details: any): any {
 			exchange_group: tls.key_exchange_group,
 			ct_compliance: tls.ct_compliance,
 			alps_negotiated: tls.alps_negotiated,
-		};
+		}
 	}
 
 	if (details.socket_info && typeof details.socket_info === 'object') {
-		const socket = details.socket_info;
+		const socket = details.socket_info
 		extracted.socket_info = {
 			is_connected: socket.is_connected,
 			was_ever_used: socket.was_ever_used,
@@ -517,14 +517,14 @@ function extractChromiumDetails(details: any): any {
 			ssl_handshake_duration_ms: socket.ssl_handshake_duration_ms,
 			owned_socket: socket.owned_socket,
 			socket_reuse_type: socket.socket_reuse_type,
-		};
+		}
 	}
 
 	if (details.url_loader_error && typeof details.url_loader_error === 'object') {
 		extracted.url_loader_error = {
 			is_request_error: details.url_loader_error.is_request_error,
 			network_process_crashed: details.url_loader_error.network_process_crashed,
-		};
+		}
 	}
 
 	if (Array.isArray(details.active_stream_details)) {
@@ -546,7 +546,7 @@ function extractChromiumDetails(details: any): any {
 			pending_send_data_remaining: stream.pending_send_data_remaining,
 			request_time_ms: stream.request_time_ms,
 			response_time_ms: stream.response_time_ms,
-		}));
+		}))
 	}
 
 	if (Array.isArray(details.closed_stream_details)) {
@@ -568,53 +568,53 @@ function extractChromiumDetails(details: any): any {
 			pending_send_data_remaining: stream.pending_send_data_remaining,
 			request_time_ms: stream.request_time_ms,
 			response_time_ms: stream.response_time_ms,
-		}));
+		}))
 	}
 
-	return extracted;
+	return extracted
 }
 
 export class LogMemory {
-	private static _logs: string[] = [];
-	private static _requestIds: string[] = [];
-	private static readonly MAX_LOGS = 50;
+	private static _logs: string[] = []
+	private static _requestIds: string[] = []
+	private static readonly MAX_LOGS = 50
 
 	/**
 	 * Extracts the requestId from a log message if it matches the expected pattern.
 	 * Returns a string in the format 'requestId: {string}' or undefined if not found.
 	 */
 	private static extractRequestIdFromMessage(message: string): string | undefined {
-		const match = message.match(/request done: requestId: \[([0-9a-fA-F-]+)\] model deployment ID: \[/);
+		const match = message.match(/request done: requestId: \[([0-9a-fA-F-]+)\] model deployment ID: \[/)
 		if (match) {
-			const requestId = match[1];
+			const requestId = match[1]
 			if (!this._requestIds.includes(requestId)) {
-				return requestId;
+				return requestId
 			}
 		}
-		return undefined;
+		return undefined
 	}
 
 	static addLog(level: string, message: string): void {
 		if (this._logs.length >= this.MAX_LOGS) {
-			this._logs.shift();
+			this._logs.shift()
 		}
-		this._logs.push(`${level}: ${message}`);
+		this._logs.push(`${level}: ${message}`)
 
 		// Extract and store requestId if present
 		if (this._requestIds.length >= this.MAX_LOGS) {
-			this._requestIds.shift();
+			this._requestIds.shift()
 		}
-		const requestId = this.extractRequestIdFromMessage(message);
+		const requestId = this.extractRequestIdFromMessage(message)
 		if (requestId) {
-			this._requestIds.push(requestId);
+			this._requestIds.push(requestId)
 		}
 	}
 
 	static getLogs(): string[] {
-		return this._logs;
+		return this._logs
 	}
 
 	static getRequestIds(): string[] {
-		return this._requestIds;
+		return this._requestIds
 	}
 }

@@ -1,25 +1,25 @@
-import { Comparator } from './arrays';
+import { Comparator } from './arrays'
 
 export function findLast<T, R extends T>(
 	array: readonly T[],
 	predicate: (item: T, index: number) => item is R,
 	fromIndex?: number,
-): R | undefined;
+): R | undefined
 export function findLast<T>(
 	array: readonly T[],
 	predicate: (item: T, index: number) => unknown,
 	fromIndex?: number,
-): T | undefined;
+): T | undefined
 export function findLast<T>(
 	array: readonly T[],
 	predicate: (item: T, index: number) => unknown,
 	fromIndex = array.length - 1,
 ): T | undefined {
-	const idx = findLastIdx(array, predicate, fromIndex);
+	const idx = findLastIdx(array, predicate, fromIndex)
 	if (idx === -1) {
-		return undefined;
+		return undefined
 	}
-	return array[idx];
+	return array[idx]
 }
 
 export function findLastIdx<T>(
@@ -28,36 +28,36 @@ export function findLastIdx<T>(
 	fromIndex = array.length - 1,
 ): number {
 	for (let i = fromIndex; i >= 0; i--) {
-		const element = array[i];
+		const element = array[i]
 
 		if (predicate(element, i)) {
-			return i;
+			return i
 		}
 	}
 
-	return -1;
+	return -1
 }
 
 export function findFirst<T, R extends T>(
 	array: readonly T[],
 	predicate: (item: T, index: number) => item is R,
 	fromIndex?: number,
-): R | undefined;
+): R | undefined
 export function findFirst<T>(
 	array: readonly T[],
 	predicate: (item: T, index: number) => unknown,
 	fromIndex?: number,
-): T | undefined;
+): T | undefined
 export function findFirst<T>(
 	array: readonly T[],
 	predicate: (item: T, index: number) => unknown,
 	fromIndex = 0,
 ): T | undefined {
-	const idx = findFirstIdx(array, predicate, fromIndex);
+	const idx = findFirstIdx(array, predicate, fromIndex)
 	if (idx === -1) {
-		return undefined;
+		return undefined
 	}
-	return array[idx];
+	return array[idx]
 }
 
 export function findFirstIdx<T>(
@@ -66,14 +66,14 @@ export function findFirstIdx<T>(
 	fromIndex = 0,
 ): number {
 	for (let i = fromIndex; i < array.length; i++) {
-		const element = array[i];
+		const element = array[i]
 
 		if (predicate(element, i)) {
-			return i;
+			return i
 		}
 	}
 
-	return -1;
+	return -1
 }
 
 /**
@@ -83,8 +83,8 @@ export function findFirstIdx<T>(
  * @returns `undefined` if no item matches, otherwise the last item that matches the predicate.
  */
 export function findLastMonotonous<T>(array: readonly T[], predicate: (item: T) => boolean): T | undefined {
-	const idx = findLastIdxMonotonous(array, predicate);
-	return idx === -1 ? undefined : array[idx];
+	const idx = findLastIdxMonotonous(array, predicate)
+	return idx === -1 ? undefined : array[idx]
 }
 
 /**
@@ -99,17 +99,17 @@ export function findLastIdxMonotonous<T>(
 	startIdx = 0,
 	endIdxEx = array.length,
 ): number {
-	let i = startIdx;
-	let j = endIdxEx;
+	let i = startIdx
+	let j = endIdxEx
 	while (i < j) {
-		const k = Math.floor((i + j) / 2);
+		const k = Math.floor((i + j) / 2)
 		if (predicate(array[k])) {
-			i = k + 1;
+			i = k + 1
 		} else {
-			j = k;
+			j = k
 		}
 	}
-	return i - 1;
+	return i - 1
 }
 
 /**
@@ -119,8 +119,8 @@ export function findLastIdxMonotonous<T>(
  * @returns `undefined` if no item matches, otherwise the first item that matches the predicate.
  */
 export function findFirstMonotonous<T>(array: readonly T[], predicate: (item: T) => boolean): T | undefined {
-	const idx = findFirstIdxMonotonousOrArrLen(array, predicate);
-	return idx === array.length ? undefined : array[idx];
+	const idx = findFirstIdxMonotonousOrArrLen(array, predicate)
+	return idx === array.length ? undefined : array[idx]
 }
 
 /**
@@ -135,17 +135,17 @@ export function findFirstIdxMonotonousOrArrLen<T>(
 	startIdx = 0,
 	endIdxEx = array.length,
 ): number {
-	let i = startIdx;
-	let j = endIdxEx;
+	let i = startIdx
+	let j = endIdxEx
 	while (i < j) {
-		const k = Math.floor((i + j) / 2);
+		const k = Math.floor((i + j) / 2)
 		if (predicate(array[k])) {
-			j = k;
+			j = k
 		} else {
-			i = k + 1;
+			i = k + 1
 		}
 	}
-	return i;
+	return i
 }
 
 export function findFirstIdxMonotonous<T>(
@@ -154,8 +154,8 @@ export function findFirstIdxMonotonous<T>(
 	startIdx = 0,
 	endIdxEx = array.length,
 ): number {
-	const idx = findFirstIdxMonotonousOrArrLen(array, predicate, startIdx, endIdxEx);
-	return idx === array.length ? -1 : idx;
+	const idx = findFirstIdxMonotonousOrArrLen(array, predicate, startIdx, endIdxEx)
+	return idx === array.length ? -1 : idx
 }
 
 /**
@@ -165,10 +165,10 @@ export function findFirstIdxMonotonous<T>(
  * * You query this array multiple times with monotonous predicates that get weaker and weaker.
  */
 export class MonotonousArray<T> {
-	public static assertInvariants = false;
+	public static assertInvariants = false
 
-	private _findLastMonotonousLastIdx = 0;
-	private _prevFindLastPredicate: ((item: T) => boolean) | undefined;
+	private _findLastMonotonousLastIdx = 0
+	private _prevFindLastPredicate: ((item: T) => boolean) | undefined
 
 	constructor(private readonly _array: readonly T[]) {}
 
@@ -183,16 +183,16 @@ export class MonotonousArray<T> {
 					if (this._prevFindLastPredicate(item) && !predicate(item)) {
 						throw new Error(
 							'MonotonousArray: current predicate must be weaker than (or equal to) the previous predicate.',
-						);
+						)
 					}
 				}
 			}
-			this._prevFindLastPredicate = predicate;
+			this._prevFindLastPredicate = predicate
 		}
 
-		const idx = findLastIdxMonotonous(this._array, predicate, this._findLastMonotonousLastIdx);
-		this._findLastMonotonousLastIdx = idx + 1;
-		return idx === -1 ? undefined : this._array[idx];
+		const idx = findLastIdxMonotonous(this._array, predicate, this._findLastMonotonousLastIdx)
+		this._findLastMonotonousLastIdx = idx + 1
+		return idx === -1 ? undefined : this._array[idx]
 	}
 }
 
@@ -201,17 +201,17 @@ export class MonotonousArray<T> {
  */
 export function findFirstMax<T>(array: readonly T[], comparator: Comparator<T>): T | undefined {
 	if (array.length === 0) {
-		return undefined;
+		return undefined
 	}
 
-	let max = array[0];
+	let max = array[0]
 	for (let i = 1; i < array.length; i++) {
-		const item = array[i];
+		const item = array[i]
 		if (comparator(item, max) > 0) {
-			max = item;
+			max = item
 		}
 	}
-	return max;
+	return max
 }
 
 /**
@@ -219,39 +219,39 @@ export function findFirstMax<T>(array: readonly T[], comparator: Comparator<T>):
  */
 export function findLastMax<T>(array: readonly T[], comparator: Comparator<T>): T | undefined {
 	if (array.length === 0) {
-		return undefined;
+		return undefined
 	}
 
-	let max = array[0];
+	let max = array[0]
 	for (let i = 1; i < array.length; i++) {
-		const item = array[i];
+		const item = array[i]
 		if (comparator(item, max) >= 0) {
-			max = item;
+			max = item
 		}
 	}
-	return max;
+	return max
 }
 
 /**
  * Returns the first item that is equal to or less than every other item.
  */
 export function findFirstMin<T>(array: readonly T[], comparator: Comparator<T>): T | undefined {
-	return findFirstMax(array, (a, b) => -comparator(a, b));
+	return findFirstMax(array, (a, b) => -comparator(a, b))
 }
 
 export function findMaxIdx<T>(array: readonly T[], comparator: Comparator<T>): number {
 	if (array.length === 0) {
-		return -1;
+		return -1
 	}
 
-	let maxIdx = 0;
+	let maxIdx = 0
 	for (let i = 1; i < array.length; i++) {
-		const item = array[i];
+		const item = array[i]
 		if (comparator(item, array[maxIdx]) > 0) {
-			maxIdx = i;
+			maxIdx = i
 		}
 	}
-	return maxIdx;
+	return maxIdx
 }
 
 /**
@@ -259,11 +259,11 @@ export function findMaxIdx<T>(array: readonly T[], comparator: Comparator<T>): n
  */
 export function mapFindFirst<T, R>(items: Iterable<T>, mapFn: (value: T) => R | undefined): R | undefined {
 	for (const value of items) {
-		const mapped = mapFn(value);
+		const mapped = mapFn(value)
 		if (mapped !== undefined) {
-			return mapped;
+			return mapped
 		}
 	}
 
-	return undefined;
+	return undefined
 }

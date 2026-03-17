@@ -1,5 +1,5 @@
-import { IExtensionContributionFactory, asContributionFactory } from '../../common/contributions';
-import { WebviewContribution } from '../../webview/vscode-node/WebviewContribution';
+import { IExtensionContributionFactory, asContributionFactory } from '../../common/contributions'
+import { WebviewContribution } from '../../webview/vscode-node/WebviewContribution'
 
 // ###################################################################################################
 // ###                                                                                             ###
@@ -9,4 +9,4 @@ import { WebviewContribution } from '../../webview/vscode-node/WebviewContributi
 // ###                                                                                             ###
 // ###################################################################################################
 
-export const vscodeNodeContributions: IExtensionContributionFactory[] = [asContributionFactory(WebviewContribution)];
+export const vscodeNodeContributions: IExtensionContributionFactory[] = [asContributionFactory(WebviewContribution)]

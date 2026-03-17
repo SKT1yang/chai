@@ -7,58 +7,58 @@
  * @param code The character code to get alternate characters for
  */
 export function getKoreanAltChars(code: number): ArrayLike<number> | undefined {
-	const result = disassembleKorean(code);
+	const result = disassembleKorean(code)
 	if (result && result.length > 0) {
-		return new Uint32Array(result);
+		return new Uint32Array(result)
 	}
-	return undefined;
+	return undefined
 }
 
-let codeBufferLength = 0;
-const codeBuffer = new Uint32Array(10);
+let codeBufferLength = 0
+const codeBuffer = new Uint32Array(10)
 function disassembleKorean(code: number): Uint32Array | undefined {
-	codeBufferLength = 0;
+	codeBufferLength = 0
 
 	// Initial consonants (초성)
-	getCodesFromArray(code, modernConsonants, HangulRangeStartCode.InitialConsonant);
+	getCodesFromArray(code, modernConsonants, HangulRangeStartCode.InitialConsonant)
 	if (codeBufferLength > 0) {
-		return codeBuffer.subarray(0, codeBufferLength);
+		return codeBuffer.subarray(0, codeBufferLength)
 	}
 
 	// Vowels (중성)
-	getCodesFromArray(code, modernVowels, HangulRangeStartCode.Vowel);
+	getCodesFromArray(code, modernVowels, HangulRangeStartCode.Vowel)
 	if (codeBufferLength > 0) {
-		return codeBuffer.subarray(0, codeBufferLength);
+		return codeBuffer.subarray(0, codeBufferLength)
 	}
 
 	// Final consonants (종성)
-	getCodesFromArray(code, modernFinalConsonants, HangulRangeStartCode.FinalConsonant);
+	getCodesFromArray(code, modernFinalConsonants, HangulRangeStartCode.FinalConsonant)
 	if (codeBufferLength > 0) {
-		return codeBuffer.subarray(0, codeBufferLength);
+		return codeBuffer.subarray(0, codeBufferLength)
 	}
 
 	// Hangul Compatibility Jamo
-	getCodesFromArray(code, compatibilityJamo, HangulRangeStartCode.CompatibilityJamo);
+	getCodesFromArray(code, compatibilityJamo, HangulRangeStartCode.CompatibilityJamo)
 	if (codeBufferLength) {
-		return codeBuffer.subarray(0, codeBufferLength);
+		return codeBuffer.subarray(0, codeBufferLength)
 	}
 
 	// Hangul Syllables
 	if (code >= 0xac00 && code <= 0xd7a3) {
-		const hangulIndex = code - 0xac00;
-		const vowelAndFinalConsonantProduct = hangulIndex % 588;
+		const hangulIndex = code - 0xac00
+		const vowelAndFinalConsonantProduct = hangulIndex % 588
 
 		// 0-based starting at 0x1100
-		const initialConsonantIndex = Math.floor(hangulIndex / 588);
+		const initialConsonantIndex = Math.floor(hangulIndex / 588)
 		// 0-based starting at 0x1161
-		const vowelIndex = Math.floor(vowelAndFinalConsonantProduct / 28);
+		const vowelIndex = Math.floor(vowelAndFinalConsonantProduct / 28)
 		// 0-based starting at 0x11A8
 		// Subtract 1 as the standard algorithm uses the 0 index to represent no
 		// final consonant
-		const finalConsonantIndex = (vowelAndFinalConsonantProduct % 28) - 1;
+		const finalConsonantIndex = (vowelAndFinalConsonantProduct % 28) - 1
 
 		if (initialConsonantIndex < modernConsonants.length) {
-			getCodesFromArray(initialConsonantIndex, modernConsonants, 0);
+			getCodesFromArray(initialConsonantIndex, modernConsonants, 0)
 		} else if (
 			HangulRangeStartCode.InitialConsonant + initialConsonantIndex - HangulRangeStartCode.CompatibilityJamo <
 			compatibilityJamo.length
@@ -67,11 +67,11 @@ function disassembleKorean(code: number): Uint32Array | undefined {
 				HangulRangeStartCode.InitialConsonant + initialConsonantIndex,
 				compatibilityJamo,
 				HangulRangeStartCode.CompatibilityJamo,
-			);
+			)
 		}
 
 		if (vowelIndex < modernVowels.length) {
-			getCodesFromArray(vowelIndex, modernVowels, 0);
+			getCodesFromArray(vowelIndex, modernVowels, 0)
 		} else if (
 			HangulRangeStartCode.Vowel + vowelIndex - HangulRangeStartCode.CompatibilityJamo <
 			compatibilityJamo.length
@@ -80,12 +80,12 @@ function disassembleKorean(code: number): Uint32Array | undefined {
 				HangulRangeStartCode.Vowel + vowelIndex - HangulRangeStartCode.CompatibilityJamo,
 				compatibilityJamo,
 				HangulRangeStartCode.CompatibilityJamo,
-			);
+			)
 		}
 
 		if (finalConsonantIndex >= 0) {
 			if (finalConsonantIndex < modernFinalConsonants.length) {
-				getCodesFromArray(finalConsonantIndex, modernFinalConsonants, 0);
+				getCodesFromArray(finalConsonantIndex, modernFinalConsonants, 0)
 			} else if (
 				HangulRangeStartCode.FinalConsonant + finalConsonantIndex - HangulRangeStartCode.CompatibilityJamo <
 				compatibilityJamo.length
@@ -94,21 +94,21 @@ function disassembleKorean(code: number): Uint32Array | undefined {
 					HangulRangeStartCode.FinalConsonant + finalConsonantIndex - HangulRangeStartCode.CompatibilityJamo,
 					compatibilityJamo,
 					HangulRangeStartCode.CompatibilityJamo,
-				);
+				)
 			}
 		}
 
 		if (codeBufferLength > 0) {
-			return codeBuffer.subarray(0, codeBufferLength);
+			return codeBuffer.subarray(0, codeBufferLength)
 		}
 	}
-	return undefined;
+	return undefined
 }
 
 function getCodesFromArray(code: number, array: ArrayLike<number>, arrayStartIndex: number): void {
 	// Verify the code is within the array's range
 	if (code >= arrayStartIndex && code < arrayStartIndex + array.length) {
-		addCodesToBuffer(array[code - arrayStartIndex]);
+		addCodesToBuffer(array[code - arrayStartIndex])
 	}
 }
 
@@ -116,15 +116,15 @@ function addCodesToBuffer(codes: number): void {
 	// NUL is ignored, this is used for archaic characters to avoid using a Map
 	// for the data
 	if (codes === AsciiCode.NUL) {
-		return;
+		return
 	}
 	// Number stored in format: OptionalThirdCode << 16 | OptionalSecondCode << 8 | Code
-	codeBuffer[codeBufferLength++] = codes & 0xff;
+	codeBuffer[codeBufferLength++] = codes & 0xff
 	if (codes >> 8) {
-		codeBuffer[codeBufferLength++] = (codes >> 8) & 0xff;
+		codeBuffer[codeBufferLength++] = (codes >> 8) & 0xff
 	}
 	if (codes >> 16) {
-		codeBuffer[codeBufferLength++] = (codes >> 16) & 0xff;
+		codeBuffer[codeBufferLength++] = (codes >> 16) & 0xff
 	}
 }
 
@@ -246,7 +246,7 @@ const modernConsonants = new Uint8Array([
 	AsciiCode.x, // ㅌ
 	AsciiCode.v, // ㅍ
 	AsciiCode.g, // ㅎ
-]);
+])
 
 /**
  * Hangul Jamo - Modern Vowels
@@ -280,7 +280,7 @@ const modernVowels = new Uint16Array([
 	AsciiCode.m, //  -> ㅡ
 	AsciiCodeCombo.ml, //  -> ㅢ
 	AsciiCode.l, //  -> ㅣ
-]);
+])
 
 /**
  * Hangul Jamo - Modern Consonants #2
@@ -321,7 +321,7 @@ const modernFinalConsonants = new Uint16Array([
 	AsciiCode.x, // ㅌ
 	AsciiCode.v, // ㅍ
 	AsciiCode.g, // ㅎ
-]);
+])
 
 /**
  * Hangul Compatibility Jamo
@@ -434,4 +434,4 @@ const compatibilityJamo = new Uint16Array([
 	// ㆌ
 	// ㆍ
 	// ㆎ
-]);
+])

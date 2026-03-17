@@ -1,9 +1,9 @@
-import { IObservable, IReader } from '../base';
-import { BugIndicatingError, DisposableStore } from '../commonFacade/deps';
-import { DebugOwner, getDebugName, DebugNameData } from '../debugName';
-import { observableFromEvent } from '../observables/observableFromEvent';
-import { autorunOpts } from '../reactions/autorun';
-import { derivedObservableWithCache } from '../utils/utils';
+import { IObservable, IReader } from '../base'
+import { BugIndicatingError, DisposableStore } from '../commonFacade/deps'
+import { DebugOwner, getDebugName, DebugNameData } from '../debugName'
+import { observableFromEvent } from '../observables/observableFromEvent'
+import { autorunOpts } from '../reactions/autorun'
+import { derivedObservableWithCache } from '../utils/utils'
 
 /**
  * Creates an observable that has the latest changed value of the given observables.
@@ -16,16 +16,16 @@ export function latestChangedValue<T extends IObservable<any>[]>(
 	observables: T,
 ): IObservable<ReturnType<T[number]['get']>> {
 	if (observables.length === 0) {
-		throw new BugIndicatingError();
+		throw new BugIndicatingError()
 	}
 
-	let hasLastChangedValue = false;
-	let lastChangedValue: unknown = undefined;
+	let hasLastChangedValue = false
+	let lastChangedValue: unknown = undefined
 
 	const result = observableFromEvent<any, void>(
 		owner,
 		(cb) => {
-			const store = new DisposableStore();
+			const store = new DisposableStore()
 			for (const o of observables) {
 				store.add(
 					autorunOpts(
@@ -35,30 +35,30 @@ export function latestChangedValue<T extends IObservable<any>[]>(
 								'.updateLastChangedValue',
 						},
 						(reader) => {
-							hasLastChangedValue = true;
-							lastChangedValue = o.read(reader);
-							cb();
+							hasLastChangedValue = true
+							lastChangedValue = o.read(reader)
+							cb()
 						},
 					),
-				);
+				)
 			}
 			store.add({
 				dispose() {
-					hasLastChangedValue = false;
-					lastChangedValue = undefined;
+					hasLastChangedValue = false
+					lastChangedValue = undefined
 				},
-			});
-			return store;
+			})
+			return store
 		},
 		() => {
 			if (hasLastChangedValue) {
-				return lastChangedValue;
+				return lastChangedValue
 			} else {
-				return observables[observables.length - 1].get();
+				return observables[observables.length - 1].get()
 			}
 		},
-	);
-	return result;
+	)
+	return result
 }
 
 /**
@@ -67,5 +67,5 @@ export function latestChangedValue<T extends IObservable<any>[]>(
  * In that case, the derived will unsubscribe from its dependencies.
  */
 export function derivedConstOnceDefined<T>(owner: DebugOwner, fn: (reader: IReader) => T): IObservable<T | undefined> {
-	return derivedObservableWithCache<T | undefined>(owner, (reader, lastValue) => lastValue ?? fn(reader));
+	return derivedObservableWithCache<T | undefined>(owner, (reader, lastValue) => lastValue ?? fn(reader))
 }

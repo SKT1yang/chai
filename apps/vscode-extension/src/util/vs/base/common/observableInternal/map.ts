@@ -1,73 +1,73 @@
-import { IObservable, ITransaction } from '../observable';
-import { observableValueOpts } from './observables/observableValueOpts';
+import { IObservable, ITransaction } from '../observable'
+import { observableValueOpts } from './observables/observableValueOpts'
 
 export class ObservableMap<K, V> implements Map<K, V> {
-	private readonly _data = new Map<K, V>();
+	private readonly _data = new Map<K, V>()
 
-	private readonly _obs = observableValueOpts({ equalsFn: () => false }, this);
+	private readonly _obs = observableValueOpts({ equalsFn: () => false }, this)
 
-	readonly observable: IObservable<Map<K, V>> = this._obs;
+	readonly observable: IObservable<Map<K, V>> = this._obs
 
 	get size(): number {
-		return this._data.size;
+		return this._data.size
 	}
 
 	has(key: K): boolean {
-		return this._data.has(key);
+		return this._data.has(key)
 	}
 
 	get(key: K): V | undefined {
-		return this._data.get(key);
+		return this._data.get(key)
 	}
 
 	set(key: K, value: V, tx?: ITransaction): this {
-		const hadKey = this._data.has(key);
-		const oldValue = this._data.get(key);
+		const hadKey = this._data.has(key)
+		const oldValue = this._data.get(key)
 		if (!hadKey || oldValue !== value) {
-			this._data.set(key, value);
-			this._obs.set(this, tx);
+			this._data.set(key, value)
+			this._obs.set(this, tx)
 		}
-		return this;
+		return this
 	}
 
 	delete(key: K, tx?: ITransaction): boolean {
-		const result = this._data.delete(key);
+		const result = this._data.delete(key)
 		if (result) {
-			this._obs.set(this, tx);
+			this._obs.set(this, tx)
 		}
-		return result;
+		return result
 	}
 
 	clear(tx?: ITransaction): void {
 		if (this._data.size > 0) {
-			this._data.clear();
-			this._obs.set(this, tx);
+			this._data.clear()
+			this._obs.set(this, tx)
 		}
 	}
 
 	forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: unknown): void {
 		this._data.forEach((value, key, _map) => {
-			callbackfn.call(thisArg, value, key, this);
-		});
+			callbackfn.call(thisArg, value, key, this)
+		})
 	}
 
 	*entries(): MapIterator<[K, V]> {
-		yield* this._data.entries();
+		yield* this._data.entries()
 	}
 
 	*keys(): MapIterator<K> {
-		yield* this._data.keys();
+		yield* this._data.keys()
 	}
 
 	*values(): MapIterator<V> {
-		yield* this._data.values();
+		yield* this._data.values()
 	}
 
 	[Symbol.iterator](): MapIterator<[K, V]> {
-		return this.entries();
+		return this.entries()
 	}
 
 	get [Symbol.toStringTag](): string {
-		return 'ObservableMap';
+		return 'ObservableMap'
 	}
 }

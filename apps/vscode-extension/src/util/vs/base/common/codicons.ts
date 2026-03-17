@@ -1,12 +1,12 @@
-import { ThemeIcon } from './themables';
-import { register } from './codiconsUtil';
-import { codiconsLibrary } from './codiconsLibrary';
+import { codiconsLibrary } from './codiconsLibrary'
+import { register } from './codiconsUtil'
+import { ThemeIcon } from './themables'
 
 /**
  * Only to be used by the iconRegistry.
  */
 export function getAllCodicons(): ThemeIcon[] {
-	return Object.values(Codicon);
+	return Object.values(Codicon)
 }
 
 /**
@@ -42,7 +42,7 @@ export const codiconsDerived = {
 	gitFetch: register('git-fetch', 0xec1d),
 	lightbulbSparkleAutofix: register('lightbulb-sparkle-autofix', 0xec1f),
 	debugBreakpointPending: register('debug-breakpoint-pending', 0xebd9),
-} as const;
+} as const
 
 /**
  * The Codicon library is a set of default icons that are built-in in VS Code.
@@ -54,4 +54,4 @@ export const codiconsDerived = {
 export const Codicon = {
 	...codiconsLibrary,
 	...codiconsDerived,
-} as const;
+} as const

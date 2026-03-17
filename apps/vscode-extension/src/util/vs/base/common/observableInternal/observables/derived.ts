@@ -1,10 +1,10 @@
-import { IObservable, IReader, ITransaction, ISettableObservable, IObservableWithChange } from '../base';
-import { IChangeTracker } from '../changeTracker';
-import { DisposableStore, EqualityComparer, IDisposable, strictEquals } from '../commonFacade/deps';
-import { DebugLocation } from '../debugLocation';
-import { DebugOwner, DebugNameData, IDebugNameData } from '../debugName';
-import { _setDerivedOpts } from './baseObservable';
-import { IDerivedReader, Derived, DerivedWithSetter } from './derivedImpl';
+import { IObservable, IReader, ITransaction, ISettableObservable, IObservableWithChange } from '../base'
+import { IChangeTracker } from '../changeTracker'
+import { DisposableStore, EqualityComparer, IDisposable, strictEquals } from '../commonFacade/deps'
+import { DebugLocation } from '../debugLocation'
+import { DebugOwner, DebugNameData, IDebugNameData } from '../debugName'
+import { _setDerivedOpts } from './baseObservable'
+import { IDerivedReader, Derived, DerivedWithSetter } from './derivedImpl'
 
 /**
  * Creates an observable that is derived from other observables.
@@ -14,12 +14,12 @@ import { IDerivedReader, Derived, DerivedWithSetter } from './derivedImpl';
  */
 export function derived<T, TChange = void>(
 	computeFn: (reader: IDerivedReader<TChange>, debugLocation?: DebugLocation) => T,
-): IObservableWithChange<T, TChange>;
+): IObservableWithChange<T, TChange>
 export function derived<T, TChange = void>(
 	owner: DebugOwner,
 	computeFn: (reader: IDerivedReader<TChange>) => T,
 	debugLocation?: DebugLocation,
-): IObservableWithChange<T, TChange>;
+): IObservableWithChange<T, TChange>
 export function derived<T, TChange = void>(
 	computeFnOrOwner: ((reader: IDerivedReader<TChange>) => T) | DebugOwner,
 	computeFn?: (reader: IDerivedReader<TChange>) => T,
@@ -33,7 +33,7 @@ export function derived<T, TChange = void>(
 			undefined,
 			strictEquals,
 			debugLocation,
-		);
+		)
 	}
 	return new Derived(
 		new DebugNameData(undefined, undefined, computeFnOrOwner as any),
@@ -43,7 +43,7 @@ export function derived<T, TChange = void>(
 		undefined,
 		strictEquals,
 		debugLocation,
-	);
+	)
 }
 
 export function derivedWithSetter<T>(
@@ -60,13 +60,13 @@ export function derivedWithSetter<T>(
 		strictEquals,
 		setter,
 		debugLocation,
-	);
+	)
 }
 
 export function derivedOpts<T>(
 	options: IDebugNameData & {
-		equalsFn?: EqualityComparer<T>;
-		onLastObserverRemoved?: () => void;
+		equalsFn?: EqualityComparer<T>
+		onLastObserverRemoved?: () => void
 	},
 	computeFn: (reader: IReader) => T,
 	debugLocation = DebugLocation.ofCaller(),
@@ -78,9 +78,9 @@ export function derivedOpts<T>(
 		options.onLastObserverRemoved,
 		options.equalsFn ?? strictEquals,
 		debugLocation,
-	);
+	)
 }
-_setDerivedOpts(derivedOpts);
+_setDerivedOpts(derivedOpts)
 
 /**
  * Represents an observable that is derived from other observables.
@@ -97,8 +97,8 @@ _setDerivedOpts(derivedOpts);
  */
 export function derivedHandleChanges<T, TDelta, TChangeSummary>(
 	options: IDebugNameData & {
-		changeTracker: IChangeTracker<TChangeSummary>;
-		equalityComparer?: EqualityComparer<T>;
+		changeTracker: IChangeTracker<TChangeSummary>
+		equalityComparer?: EqualityComparer<T>
 	},
 	computeFn: (reader: IDerivedReader<TDelta>, changeSummary: TChangeSummary) => T,
 	debugLocation = DebugLocation.ofCaller(),
@@ -110,13 +110,13 @@ export function derivedHandleChanges<T, TDelta, TChangeSummary>(
 		undefined,
 		options.equalityComparer ?? strictEquals,
 		debugLocation,
-	);
+	)
 }
 
 /**
  * @deprecated Use `derived(reader => { reader.store.add(...) })` instead!
  */
-export function derivedWithStore<T>(computeFn: (reader: IReader, store: DisposableStore) => T): IObservable<T>;
+export function derivedWithStore<T>(computeFn: (reader: IReader, store: DisposableStore) => T): IObservable<T>
 
 /**
  * @deprecated Use `derived(reader => { reader.store.add(...) })` instead!
@@ -124,85 +124,85 @@ export function derivedWithStore<T>(computeFn: (reader: IReader, store: Disposab
 export function derivedWithStore<T>(
 	owner: DebugOwner,
 	computeFn: (reader: IReader, store: DisposableStore) => T,
-): IObservable<T>;
+): IObservable<T>
 export function derivedWithStore<T>(
 	computeFnOrOwner: ((reader: IReader, store: DisposableStore) => T) | DebugOwner,
 	computeFnOrUndefined?: (reader: IReader, store: DisposableStore) => T,
 	debugLocation = DebugLocation.ofCaller(),
 ): IObservable<T> {
-	let computeFn: (reader: IReader, store: DisposableStore) => T;
-	let owner: DebugOwner;
+	let computeFn: (reader: IReader, store: DisposableStore) => T
+	let owner: DebugOwner
 	if (computeFnOrUndefined === undefined) {
-		computeFn = computeFnOrOwner as any;
-		owner = undefined;
+		computeFn = computeFnOrOwner as any
+		owner = undefined
 	} else {
-		owner = computeFnOrOwner;
-		computeFn = computeFnOrUndefined as any;
+		owner = computeFnOrOwner
+		computeFn = computeFnOrUndefined as any
 	}
 
 	// Intentionally re-assigned in case an inactive observable is re-used later
-	let store = new DisposableStore();
+	let store = new DisposableStore()
 
 	return new Derived(
 		new DebugNameData(owner, undefined, computeFn),
 		(r) => {
 			if (store.isDisposed) {
-				store = new DisposableStore();
+				store = new DisposableStore()
 			} else {
-				store.clear();
+				store.clear()
 			}
-			return computeFn(r, store);
+			return computeFn(r, store)
 		},
 		undefined,
 		() => store.dispose(),
 		strictEquals,
 		debugLocation,
-	);
+	)
 }
 
-export function derivedDisposable<T extends IDisposable | undefined>(computeFn: (reader: IReader) => T): IObservable<T>;
+export function derivedDisposable<T extends IDisposable | undefined>(computeFn: (reader: IReader) => T): IObservable<T>
 export function derivedDisposable<T extends IDisposable | undefined>(
 	owner: DebugOwner,
 	computeFn: (reader: IReader) => T,
-): IObservable<T>;
+): IObservable<T>
 export function derivedDisposable<T extends IDisposable | undefined>(
 	computeFnOrOwner: ((reader: IReader) => T) | DebugOwner,
 	computeFnOrUndefined?: (reader: IReader) => T,
 	debugLocation = DebugLocation.ofCaller(),
 ): IObservable<T> {
-	let computeFn: (reader: IReader) => T;
-	let owner: DebugOwner;
+	let computeFn: (reader: IReader) => T
+	let owner: DebugOwner
 	if (computeFnOrUndefined === undefined) {
-		computeFn = computeFnOrOwner as any;
-		owner = undefined;
+		computeFn = computeFnOrOwner as any
+		owner = undefined
 	} else {
-		owner = computeFnOrOwner;
-		computeFn = computeFnOrUndefined as any;
+		owner = computeFnOrOwner
+		computeFn = computeFnOrUndefined as any
 	}
 
-	let store: DisposableStore | undefined = undefined;
+	let store: DisposableStore | undefined = undefined
 	return new Derived(
 		new DebugNameData(owner, undefined, computeFn),
 		(r) => {
 			if (!store) {
-				store = new DisposableStore();
+				store = new DisposableStore()
 			} else {
-				store.clear();
+				store.clear()
 			}
-			const result = computeFn(r);
+			const result = computeFn(r)
 			if (result) {
-				store.add(result);
+				store.add(result)
 			}
-			return result;
+			return result
 		},
 		undefined,
 		() => {
 			if (store) {
-				store.dispose();
-				store = undefined;
+				store.dispose()
+				store = undefined
 			}
 		},
 		strictEquals,
 		debugLocation,
-	);
+	)
 }

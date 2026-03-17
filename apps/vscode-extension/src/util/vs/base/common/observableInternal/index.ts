@@ -1,6 +1,6 @@
 // This is a facade for the observable implementation. Only import from here!
 
-export { observableValueOpts } from './observables/observableValueOpts';
+export { observableValueOpts } from './observables/observableValueOpts'
 export {
 	autorun,
 	autorunDelta,
@@ -10,7 +10,7 @@ export {
 	autorunWithStoreHandleChanges,
 	autorunIterableDelta,
 	autorunSelfDisposable,
-} from './reactions/autorun';
+} from './reactions/autorun'
 export {
 	type IObservable,
 	type IObservableWithChange,
@@ -19,8 +19,8 @@ export {
 	type ISettable,
 	type ISettableObservable,
 	type ITransaction,
-} from './base';
-export { disposableObservableValue } from './observables/observableValue';
+} from './base'
+export { disposableObservableValue } from './observables/observableValue'
 export {
 	derived,
 	derivedDisposable,
@@ -28,10 +28,10 @@ export {
 	derivedOpts,
 	derivedWithSetter,
 	derivedWithStore,
-} from './observables/derived';
-export { type IDerivedReader } from './observables/derivedImpl';
-export { ObservableLazy, ObservableLazyPromise, ObservablePromise, PromiseResult } from './utils/promise';
-export { derivedWithCancellationToken, waitForState } from './utils/utilsCancellation';
+} from './observables/derived'
+export { type IDerivedReader } from './observables/derivedImpl'
+export { ObservableLazy, ObservableLazyPromise, ObservablePromise, PromiseResult } from './utils/promise'
+export { derivedWithCancellationToken, waitForState } from './utils/utilsCancellation'
 export {
 	debouncedObservable,
 	debouncedObservable2,
@@ -44,47 +44,47 @@ export {
 	signalFromObservable,
 	wasEventTriggeredRecently,
 	isObservable,
-} from './utils/utils';
-export { type DebugOwner } from './debugName';
-export { type IChangeContext, type IChangeTracker, recordChanges, recordChangesLazy } from './changeTracker';
-export { constObservable } from './observables/constObservable';
-export { type IObservableSignal, observableSignal } from './observables/observableSignal';
-export { observableFromEventOpts } from './observables/observableFromEvent';
-export { observableSignalFromEvent } from './observables/observableSignalFromEvent';
-export { asyncTransaction, globalTransaction, subtransaction, transaction, TransactionImpl } from './transaction';
-export { observableFromValueWithChangeEvent, ValueWithChangeEventFromObservable } from './utils/valueWithChangeEvent';
+} from './utils/utils'
+export { type DebugOwner } from './debugName'
+export { type IChangeContext, type IChangeTracker, recordChanges, recordChangesLazy } from './changeTracker'
+export { constObservable } from './observables/constObservable'
+export { type IObservableSignal, observableSignal } from './observables/observableSignal'
+export { observableFromEventOpts } from './observables/observableFromEvent'
+export { observableSignalFromEvent } from './observables/observableSignalFromEvent'
+export { asyncTransaction, globalTransaction, subtransaction, transaction, TransactionImpl } from './transaction'
+export { observableFromValueWithChangeEvent, ValueWithChangeEventFromObservable } from './utils/valueWithChangeEvent'
 export {
 	runOnChange,
 	runOnChangeWithCancellationToken,
 	runOnChangeWithStore,
 	type RemoveUndefined,
-} from './utils/runOnChange';
-export { derivedConstOnceDefined, latestChangedValue } from './experimental/utils';
-export { observableFromEvent } from './observables/observableFromEvent';
-export { observableValue } from './observables/observableValue';
+} from './utils/runOnChange'
+export { derivedConstOnceDefined, latestChangedValue } from './experimental/utils'
+export { observableFromEvent } from './observables/observableFromEvent'
+export { observableValue } from './observables/observableValue'
 
-export { ObservableMap } from './map';
-export { DebugLocation } from './debugLocation';
+export { ObservableMap } from './map'
+export { DebugLocation } from './debugLocation'
 
-import { addLogger, setLogObservableFn } from './logging/logging';
-import { ConsoleObservableLogger, logObservableToConsole } from './logging/consoleObservableLogger';
-import { DevToolsLogger } from './logging/debugger/devToolsLogger';
-import { env } from '../process';
-import { _setDebugGetObservableGraph } from './observables/baseObservable';
-import { debugGetObservableGraph } from './logging/debugGetDependencyGraph';
+import { env } from '../process'
+import { ConsoleObservableLogger, logObservableToConsole } from './logging/consoleObservableLogger'
+import { DevToolsLogger } from './logging/debugger/devToolsLogger'
+import { debugGetObservableGraph } from './logging/debugGetDependencyGraph'
+import { addLogger, setLogObservableFn } from './logging/logging'
+import { _setDebugGetObservableGraph } from './observables/baseObservable'
 
-_setDebugGetObservableGraph(debugGetObservableGraph);
-setLogObservableFn(logObservableToConsole);
+_setDebugGetObservableGraph(debugGetObservableGraph)
+setLogObservableFn(logObservableToConsole)
 
 // Remove "//" in the next line to enable logging
-const enableLogging = false;
+const enableLogging = false
 // || Boolean("true") // done "weirdly" so that a lint warning prevents you from pushing this
 
 if (enableLogging) {
-	addLogger(new ConsoleObservableLogger());
+	addLogger(new ConsoleObservableLogger())
 }
 
 if (env && env['VSCODE_DEV_DEBUG_OBSERVABLES']) {
 	// To debug observables you also need the extension "ms-vscode.debug-value-editor"
-	addLogger(DevToolsLogger.getInstance());
+	addLogger(DevToolsLogger.getInstance())
 }

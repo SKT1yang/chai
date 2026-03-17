@@ -1,77 +1,77 @@
-import { isTypedArray, isObject, isUndefinedOrNull } from './types';
+import { isTypedArray, isObject, isUndefinedOrNull } from './types'
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
-		return obj;
+		return obj
 	}
 	if (obj instanceof RegExp) {
-		return obj;
+		return obj
 	}
-	const result: any = Array.isArray(obj) ? [] : {};
+	const result: any = Array.isArray(obj) ? [] : {}
 	Object.entries(obj).forEach(([key, value]) => {
-		result[key] = value && typeof value === 'object' ? deepClone(value) : value;
-	});
-	return result;
+		result[key] = value && typeof value === 'object' ? deepClone(value) : value
+	})
+	return result
 }
 
 export function deepFreeze<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
-		return obj;
+		return obj
 	}
-	const stack: any[] = [obj];
+	const stack: any[] = [obj]
 	while (stack.length > 0) {
-		const obj = stack.shift();
-		Object.freeze(obj);
+		const obj = stack.shift()
+		Object.freeze(obj)
 		for (const key in obj) {
 			if (Object.prototype.hasOwnProperty.call(obj, key)) {
-				const prop = obj[key];
+				const prop = obj[key]
 				if (typeof prop === 'object' && !Object.isFrozen(prop) && !isTypedArray(prop)) {
-					stack.push(prop);
+					stack.push(prop)
 				}
 			}
 		}
 	}
-	return obj;
+	return obj
 }
 
 export function cloneAndChange(obj: any, changer: (orig: any) => any): any {
-	return _cloneAndChange(obj, changer, new Set());
+	return _cloneAndChange(obj, changer, new Set())
 }
 
 function _cloneAndChange(obj: any, changer: (orig: any) => any, seen: Set<any>): any {
 	if (isUndefinedOrNull(obj)) {
-		return obj;
+		return obj
 	}
 
-	const changed = changer(obj);
+	const changed = changer(obj)
 	if (typeof changed !== 'undefined') {
-		return changed;
+		return changed
 	}
 
 	if (Array.isArray(obj)) {
-		const r1: any[] = [];
+		const r1: any[] = []
 		for (const e of obj) {
-			r1.push(_cloneAndChange(e, changer, seen));
+			r1.push(_cloneAndChange(e, changer, seen))
 		}
-		return r1;
+		return r1
 	}
 
 	if (isObject(obj)) {
 		if (seen.has(obj)) {
-			throw new Error('Cannot clone recursive data-structure');
+			throw new Error('Cannot clone recursive data-structure')
 		}
-		seen.add(obj);
-		const r2: Record<string, unknown> = {};
+		seen.add(obj)
+		const r2: Record<string, unknown> = {}
 		for (const i2 in obj) {
 			if (Object.prototype.hasOwnProperty.call(obj, i2)) {
-				r2[i2] = _cloneAndChange((obj as { [key: string]: any })[i2], changer, seen);
+				r2[i2] = _cloneAndChange((obj as { [key: string]: any })[i2], changer, seen)
 			}
 		}
-		seen.delete(obj);
-		return r2;
+		seen.delete(obj)
+		return r2
 	}
 
-	return obj;
+	return obj
 }
 
 /**
@@ -80,80 +80,80 @@ function _cloneAndChange(obj: any, changer: (orig: any) => any, seen: Set<any>):
  */
 export function mixin(destination: any, source: any, overwrite: boolean = true): any {
 	if (!isObject(destination)) {
-		return source;
+		return source
 	}
 
 	if (isObject(source)) {
 		Object.keys(source).forEach((key) => {
-			let dest = destination as any;
-			let src = source as any;
+			let dest = destination as any
+			let src = source as any
 			if (key in destination) {
 				if (overwrite) {
 					if (isObject(dest[key]) && isObject(src[key])) {
-						mixin(dest[key], src[key], overwrite);
+						mixin(dest[key], src[key], overwrite)
 					} else {
-						dest[key] = src[key];
+						dest[key] = src[key]
 					}
 				}
 			} else {
-				dest[key] = src[key];
+				dest[key] = src[key]
 			}
-		});
+		})
 	}
-	return destination;
+	return destination
 }
 
 export function equals(one: any, other: any): boolean {
 	if (one === other) {
-		return true;
+		return true
 	}
 	if (one === null || one === undefined || other === null || other === undefined) {
-		return false;
+		return false
 	}
 	if (typeof one !== typeof other) {
-		return false;
+		return false
 	}
 	if (typeof one !== 'object') {
-		return false;
+		return false
 	}
 	if (Array.isArray(one) !== Array.isArray(other)) {
-		return false;
+		return false
 	}
 
-	let i: number;
-	let key: string;
+	let i: number
+	let key: string
 
 	if (Array.isArray(one)) {
 		if (one.length !== other.length) {
-			return false;
+			return false
 		}
 		for (i = 0; i < one.length; i++) {
 			if (!equals(one[i], other[i])) {
-				return false;
+				return false
 			}
 		}
 	} else {
-		const oneKeys: string[] = [];
+		const oneKeys: string[] = []
 
 		for (key in one) {
-			oneKeys.push(key);
+			oneKeys.push(key)
 		}
-		oneKeys.sort();
-		const otherKeys: string[] = [];
+		oneKeys.sort()
+		const otherKeys: string[] = []
 		for (key in other) {
-			otherKeys.push(key);
+			otherKeys.push(key)
 		}
-		otherKeys.sort();
+		otherKeys.sort()
 		if (!equals(oneKeys, otherKeys)) {
-			return false;
+			return false
 		}
 		for (i = 0; i < oneKeys.length; i++) {
 			if (!equals(one[oneKeys[i]], other[oneKeys[i]])) {
-				return false;
+				return false
 			}
 		}
 	}
-	return true;
+	return true
 }
 
 /**
@@ -162,23 +162,23 @@ export function equals(one: any, other: any): boolean {
  *  "Uncaught TypeError: Converting circular structure to JSON"
  */
 export function safeStringify(obj: any): string {
-	const seen = new Set<any>();
+	const seen = new Set<any>()
 	return JSON.stringify(obj, (key, value) => {
 		if (isObject(value) || Array.isArray(value)) {
 			if (seen.has(value)) {
-				return '[Circular]';
+				return '[Circular]'
 			} else {
-				seen.add(value);
+				seen.add(value)
 			}
 		}
 		if (typeof value === 'bigint') {
-			return `[BigInt ${value.toString()}]`;
+			return `[BigInt ${value.toString()}]`
 		}
-		return value;
-	});
+		return value
+	})
 }
 
-type obj = { [key: string]: any };
+type obj = { [key: string]: any }
 /**
  * Returns an object that has keys for each value that is different in the base object. Keys
  * that do not exist in the target but in the base object are not considered.
@@ -190,45 +190,45 @@ type obj = { [key: string]: any };
  * @param obj the object to use for diffing
  */
 export function distinct(base: obj, target: obj): obj {
-	const result = Object.create(null);
+	const result = Object.create(null)
 
 	if (!base || !target) {
-		return result;
+		return result
 	}
 
-	const targetKeys = Object.keys(target);
+	const targetKeys = Object.keys(target)
 	targetKeys.forEach((k) => {
-		const baseValue = base[k];
-		const targetValue = target[k];
+		const baseValue = base[k]
+		const targetValue = target[k]
 
 		if (!equals(baseValue, targetValue)) {
-			result[k] = targetValue;
+			result[k] = targetValue
 		}
-	});
+	})
 
-	return result;
+	return result
 }
 
 export function getCaseInsensitive(target: obj, key: string): unknown {
-	const lowercaseKey = key.toLowerCase();
-	const equivalentKey = Object.keys(target).find((k) => k.toLowerCase() === lowercaseKey);
-	return equivalentKey ? target[equivalentKey] : target[key];
+	const lowercaseKey = key.toLowerCase()
+	const equivalentKey = Object.keys(target).find((k) => k.toLowerCase() === lowercaseKey)
+	return equivalentKey ? target[equivalentKey] : target[key]
 }
 
 export function filter(obj: obj, predicate: (key: string, value: any) => boolean): obj {
-	const result = Object.create(null);
+	const result = Object.create(null)
 	for (const [key, value] of Object.entries(obj)) {
 		if (predicate(key, value)) {
-			result[key] = value;
+			result[key] = value
 		}
 	}
-	return result;
+	return result
 }
 
 export function mapValues<T extends {}, R>(obj: T, fn: (value: T[keyof T], key: string) => R): { [K in keyof T]: R } {
-	const result: { [key: string]: R } = {};
+	const result: { [key: string]: R } = {}
 	for (const [key, value] of Object.entries(obj)) {
-		result[key] = fn(<T[keyof T]>value, key);
+		result[key] = fn(<T[keyof T]>value, key)
 	}
-	return result as { [K in keyof T]: R };
+	return result as { [K in keyof T]: R }
 }

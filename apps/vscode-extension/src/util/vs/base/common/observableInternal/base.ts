@@ -1,4 +1,4 @@
-import { DisposableStore, onUnexpectedError } from './commonFacade/deps';
+import { DisposableStore, onUnexpectedError } from './commonFacade/deps'
 
 /**
  * Represents an observable value.
@@ -25,7 +25,7 @@ export interface IObservableWithChange<T, TChange = unknown> {
 	 * Calls {@link IObserver.handleChange} if the observable notices that the value changed.
 	 * Must not be called from {@link IObserver.handleChange}!
 	 */
-	get(): T;
+	get(): T
 
 	/**
 	 * Forces the observable to check for changes and report them.
@@ -35,19 +35,19 @@ export interface IObservableWithChange<T, TChange = unknown> {
 	 * Calls {@link IObserver.handleChange} if the observable notices that the value changed.
 	 * Must not be called from {@link IObserver.handleChange}!
 	 */
-	reportChanges(): void;
+	reportChanges(): void
 
 	/**
 	 * Adds the observer to the set of subscribed observers.
 	 * This method is idempotent.
 	 */
-	addObserver(observer: IObserver): void;
+	addObserver(observer: IObserver): void
 
 	/**
 	 * Removes the observer from the set of subscribed observers.
 	 * This method is idempotent.
 	 */
-	removeObserver(observer: IObserver): void;
+	removeObserver(observer: IObserver): void
 
 	// #region These members have a standard implementation and are only part of the interface for convenience.
 
@@ -57,43 +57,43 @@ export interface IObservableWithChange<T, TChange = unknown> {
 	 * Calls {@link IReader.readObservable} if a reader is given, otherwise {@link IObservable.get}
 	 * (see {@link ConvenientObservable.read} for the implementation).
 	 */
-	read(reader: IReader | undefined): T;
+	read(reader: IReader | undefined): T
 
 	/**
 	 * Makes sure this value is computed eagerly.
 	 */
-	recomputeInitiallyAndOnChange(store: DisposableStore, handleValue?: (value: T) => void): IObservable<T>;
+	recomputeInitiallyAndOnChange(store: DisposableStore, handleValue?: (value: T) => void): IObservable<T>
 
 	/**
 	 * Makes sure this value is cached.
 	 */
-	keepObserved(store: DisposableStore): IObservable<T>;
+	keepObserved(store: DisposableStore): IObservable<T>
 
 	/**
 	 * Creates a derived observable that depends on this observable.
 	 * Use the reader to read other observables
 	 * (see {@link ConvenientObservable.map} for the implementation).
 	 */
-	map<TNew>(fn: (value: T, reader: IReader) => TNew): IObservable<TNew>;
-	map<TNew>(owner: object, fn: (value: T, reader: IReader) => TNew): IObservable<TNew>;
+	map<TNew>(fn: (value: T, reader: IReader) => TNew): IObservable<TNew>
+	map<TNew>(owner: object, fn: (value: T, reader: IReader) => TNew): IObservable<TNew>
 
-	flatten<TNew>(this: IObservable<IObservable<TNew>>): IObservable<TNew>;
+	flatten<TNew>(this: IObservable<IObservable<TNew>>): IObservable<TNew>
 
 	/**
 	 * ONLY FOR DEBUGGING!
 	 * Logs computations of this derived.
 	 */
-	log(): IObservableWithChange<T, TChange>;
+	log(): IObservableWithChange<T, TChange>
 
 	/**
 	 * A human-readable name for debugging purposes.
 	 */
-	readonly debugName: string;
+	readonly debugName: string
 
 	/**
 	 * This property captures the type of the change object. Do not use it at runtime!
 	 */
-	readonly TChange: TChange;
+	readonly TChange: TChange
 
 	// #endregion
 }
@@ -115,13 +115,13 @@ export interface IObserver {
 	 * Implementations must not get/read the value of other observables, as they might not have received this event yet!
 	 * The method {@link IObservable.reportChanges} can be used to force the observable to report the changes.
 	 */
-	beginUpdate<T>(observable: IObservable<T>): void;
+	beginUpdate<T>(observable: IObservable<T>): void
 
 	/**
 	 * Signals that the transaction that potentially modified the given observable ended.
 	 * This is a good place to react to (potential) changes.
 	 */
-	endUpdate<T>(observable: IObservable<T>): void;
+	endUpdate<T>(observable: IObservable<T>): void
 
 	/**
 	 * Signals that the given observable might have changed.
@@ -130,7 +130,7 @@ export interface IObserver {
 	 * Implementations must not get/read the value of other observables, as they might not have received this event yet!
 	 * The change should be processed lazily or in {@link IObserver.endUpdate}.
 	 */
-	handlePossibleChange<T>(observable: IObservable<T>): void;
+	handlePossibleChange<T>(observable: IObservable<T>): void
 
 	/**
 	 * Signals that the given {@link observable} changed.
@@ -140,7 +140,7 @@ export interface IObserver {
 	 *
 	 * @param change Indicates how or why the value changed.
 	 */
-	handleChange<T, TChange>(observable: IObservableWithChange<T, TChange>, change: TChange): void;
+	handleChange<T, TChange>(observable: IObservableWithChange<T, TChange>, change: TChange): void
 }
 
 /**
@@ -151,7 +151,7 @@ export interface IReader {
 	/**
 	 * Reads the value of an observable and subscribes to it.
 	 */
-	readObservable<T>(observable: IObservableWithChange<T, any>): T;
+	readObservable<T>(observable: IObservableWithChange<T, any>): T
 }
 
 export interface ISettable<T, TChange = void> {
@@ -162,7 +162,7 @@ export interface ISettable<T, TChange = void> {
 	 * @param transaction When given, value changes are handled on demand or when the transaction ends.
 	 * @param change Describes how or why the value changed.
 	 */
-	set(value: T, transaction: ITransaction | undefined, change: TChange): void;
+	set(value: T, transaction: ITransaction | undefined, change: TChange): void
 }
 
 export interface ITransaction {
@@ -170,16 +170,16 @@ export interface ITransaction {
 	 * Calls {@link Observer.beginUpdate} immediately
 	 * and {@link Observer.endUpdate} when the transaction ends.
 	 */
-	updateObserver(observer: IObserver, observable: IObservableWithChange<any, any>): void;
+	updateObserver(observer: IObserver, observable: IObservableWithChange<any, any>): void
 }
 
 /**
  * This function is used to indicate that the caller recovered from an error that indicates a bug.
  */
 export function handleBugIndicatingErrorRecovery(message: string) {
-	const err = new Error('BugIndicatingErrorRecovery: ' + message);
-	onUnexpectedError(err);
-	console.error('recovered from an error that indicates a bug', err);
+	const err = new Error('BugIndicatingErrorRecovery: ' + message)
+	onUnexpectedError(err)
+	console.error('recovered from an error that indicates a bug', err)
 }
 
 /**
@@ -192,7 +192,7 @@ export interface IReaderWithStore extends IReader {
 	/**
 	 * Items in this store get disposed just before the observable recomputes/reruns or when it becomes unobserved.
 	 */
-	get store(): DisposableStore;
+	get store(): DisposableStore
 
 	/**
 	 * Items in this store get disposed just after the observable recomputes/reruns or when it becomes unobserved.
@@ -201,5 +201,5 @@ export interface IReaderWithStore extends IReader {
 	 * Warning: Items in this store might still get disposed before dependents (that read the now disposed value in the past) are recomputed with the new (undisposed) value!
 	 * A clean solution for this is ref counting.
 	 */
-	get delayedStore(): DisposableStore;
+	get delayedStore(): DisposableStore
 }

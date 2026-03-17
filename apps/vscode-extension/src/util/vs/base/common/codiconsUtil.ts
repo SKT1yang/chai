@@ -1,23 +1,23 @@
-import { ThemeIcon } from './themables';
-import { isString } from './types';
+import { ThemeIcon } from './themables'
+import { isString } from './types'
 
-const _codiconFontCharacters: { [id: string]: number } = Object.create(null);
+const _codiconFontCharacters: { [id: string]: number } = Object.create(null)
 
 export function register(id: string, fontCharacter: number | string): ThemeIcon {
 	if (isString(fontCharacter)) {
-		const val = _codiconFontCharacters[fontCharacter];
+		const val = _codiconFontCharacters[fontCharacter]
 		if (val === undefined) {
-			throw new Error(`${id} references an unknown codicon: ${fontCharacter}`);
+			throw new Error(`${id} references an unknown codicon: ${fontCharacter}`)
 		}
-		fontCharacter = val;
+		fontCharacter = val
 	}
-	_codiconFontCharacters[id] = fontCharacter;
-	return { id };
+	_codiconFontCharacters[id] = fontCharacter
+	return { id }
 }
 
 /**
  * Only to be used by the iconRegistry.
  */
 export function getCodiconFontCharacters(): { [id: string]: number } {
-	return _codiconFontCharacters;
+	return _codiconFontCharacters
 }

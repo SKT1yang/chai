@@ -1,39 +1,39 @@
-import { IObservable } from '../base';
-import { TransactionImpl } from '../transaction';
-import { IObservableLogger, IChangeInformation, addLogger } from './logging';
-import { FromEventObservable } from '../observables/observableFromEvent';
-import { getClassName } from '../debugName';
-import { Derived } from '../observables/derivedImpl';
-import { AutorunObserver } from '../reactions/autorunImpl';
+import { IObservable } from '../base'
+import { getClassName } from '../debugName'
+import { Derived } from '../observables/derivedImpl'
+import { FromEventObservable } from '../observables/observableFromEvent'
+import { AutorunObserver } from '../reactions/autorunImpl'
+import { TransactionImpl } from '../transaction'
+import { IObservableLogger, IChangeInformation, addLogger } from './logging'
 
-let consoleObservableLogger: ConsoleObservableLogger | undefined;
+let consoleObservableLogger: ConsoleObservableLogger | undefined
 
 export function logObservableToConsole(obs: IObservable<any>): void {
 	if (!consoleObservableLogger) {
-		consoleObservableLogger = new ConsoleObservableLogger();
-		addLogger(consoleObservableLogger);
+		consoleObservableLogger = new ConsoleObservableLogger()
+		addLogger(consoleObservableLogger)
 	}
-	consoleObservableLogger.addFilteredObj(obs);
+	consoleObservableLogger.addFilteredObj(obs)
 }
 
 export class ConsoleObservableLogger implements IObservableLogger {
-	private indentation = 0;
+	private indentation = 0
 
-	private _filteredObjects: Set<unknown> | undefined;
+	private _filteredObjects: Set<unknown> | undefined
 
 	public addFilteredObj(obj: unknown): void {
 		if (!this._filteredObjects) {
-			this._filteredObjects = new Set();
+			this._filteredObjects = new Set()
 		}
-		this._filteredObjects.add(obj);
+		this._filteredObjects.add(obj)
 	}
 
 	private _isIncluded(obj: unknown): boolean {
-		return this._filteredObjects?.has(obj) ?? true;
+		return this._filteredObjects?.has(obj) ?? true
 	}
 
 	private textToConsoleArgs(text: ConsoleText): unknown[] {
-		return consoleTextToArgs([normalText(repeat('|  ', this.indentation)), text]);
+		return consoleTextToArgs([normalText(repeat('|  ', this.indentation)), text])
 	}
 
 	private formatInfo(info: IChangeInformation): ConsoleText[] {
@@ -44,7 +44,7 @@ export class ConsoleObservableLogger implements IObservableLogger {
 					color: 'green',
 				}),
 				normalText(` (initial)`),
-			];
+			]
 		}
 		return info.didChange
 			? [
@@ -58,36 +58,36 @@ export class ConsoleObservableLogger implements IObservableLogger {
 						color: 'green',
 					}),
 				]
-			: [normalText(` (unchanged)`)];
+			: [normalText(` (unchanged)`)]
 	}
 
 	handleObservableCreated(observable: IObservable<any>): void {
 		if (observable instanceof Derived) {
-			const derived = observable;
-			this.changedObservablesSets.set(derived, new Set());
+			const derived = observable
+			this.changedObservablesSets.set(derived, new Set())
 
-			const debugTrackUpdating = false;
+			const debugTrackUpdating = false
 			if (debugTrackUpdating) {
-				const updating: IObservable<any>[] = [];
-				(derived as any).__debugUpdating = updating;
+				const updating: IObservable<any>[] = []
+				;(derived as any).__debugUpdating = updating
 
 				// oxlint-disable-next-line typescript/unbound-method
-				const existingBeginUpdate = derived.beginUpdate;
+				const existingBeginUpdate = derived.beginUpdate
 				derived.beginUpdate = (obs) => {
-					updating.push(obs);
-					return existingBeginUpdate.apply(derived, [obs]);
-				};
+					updating.push(obs)
+					return existingBeginUpdate.apply(derived, [obs])
+				}
 
 				// oxlint-disable-next-line typescript/unbound-method
-				const existingEndUpdate = derived.endUpdate;
+				const existingEndUpdate = derived.endUpdate
 				derived.endUpdate = (obs) => {
-					const idx = updating.indexOf(obs);
+					const idx = updating.indexOf(obs)
 					if (idx === -1) {
-						console.error('endUpdate called without beginUpdate', derived.debugName, obs.debugName);
+						console.error('endUpdate called without beginUpdate', derived.debugName, obs.debugName)
 					}
-					updating.splice(idx, 1);
-					return existingEndUpdate.apply(derived, [obs]);
-				};
+					updating.splice(idx, 1)
+					return existingEndUpdate.apply(derived, [obs])
+				}
 			}
 		}
 	}
@@ -96,11 +96,11 @@ export class ConsoleObservableLogger implements IObservableLogger {
 
 	handleObservableUpdated(observable: IObservable<unknown>, info: IChangeInformation): void {
 		if (!this._isIncluded(observable)) {
-			return;
+			return
 		}
 		if (observable instanceof Derived) {
-			this._handleDerivedRecomputed(observable, info);
-			return;
+			this._handleDerivedRecomputed(observable, info)
+			return
 		}
 
 		console.log(
@@ -109,34 +109,34 @@ export class ConsoleObservableLogger implements IObservableLogger {
 				styled(observable.debugName, { color: 'BlueViolet' }),
 				...this.formatInfo(info),
 			]),
-		);
+		)
 	}
 
-	private readonly changedObservablesSets = new WeakMap<object, Set<IObservable<any>>>();
+	private readonly changedObservablesSets = new WeakMap<object, Set<IObservable<any>>>()
 
 	formatChanges(changes: Set<IObservable<any>>): ConsoleText | undefined {
 		if (changes.size === 0) {
-			return undefined;
+			return undefined
 		}
-		return styled(' (changed deps: ' + [...changes].map((o) => o.debugName).join(', ') + ')', { color: 'gray' });
+		return styled(' (changed deps: ' + [...changes].map((o) => o.debugName).join(', ') + ')', { color: 'gray' })
 	}
 
 	handleDerivedDependencyChanged(derived: Derived<any>, observable: IObservable<any>, _change: unknown): void {
 		if (!this._isIncluded(derived)) {
-			return;
+			return
 		}
 
-		this.changedObservablesSets.get(derived)?.add(observable);
+		this.changedObservablesSets.get(derived)?.add(observable)
 	}
 
 	_handleDerivedRecomputed(derived: Derived<unknown>, info: IChangeInformation): void {
 		if (!this._isIncluded(derived)) {
-			return;
+			return
 		}
 
-		const changedObservables = this.changedObservablesSets.get(derived);
+		const changedObservables = this.changedObservablesSets.get(derived)
 		if (!changedObservables) {
-			return;
+			return
 		}
 		console.log(
 			...this.textToConsoleArgs([
@@ -146,13 +146,13 @@ export class ConsoleObservableLogger implements IObservableLogger {
 				this.formatChanges(changedObservables),
 				{ data: [{ fn: derived._debugNameData.referenceFn ?? derived._computeFn }] },
 			]),
-		);
-		changedObservables.clear();
+		)
+		changedObservables.clear()
 	}
 
 	handleDerivedCleared(derived: Derived<unknown>): void {
 		if (!this._isIncluded(derived)) {
-			return;
+			return
 		}
 
 		console.log(
@@ -160,12 +160,12 @@ export class ConsoleObservableLogger implements IObservableLogger {
 				formatKind('derived cleared'),
 				styled(derived.debugName, { color: 'BlueViolet' }),
 			]),
-		);
+		)
 	}
 
 	handleFromEventObservableTriggered(observable: FromEventObservable<any, any>, info: IChangeInformation): void {
 		if (!this._isIncluded(observable)) {
-			return;
+			return
 		}
 
 		console.log(
@@ -175,31 +175,31 @@ export class ConsoleObservableLogger implements IObservableLogger {
 				...this.formatInfo(info),
 				{ data: [{ fn: observable._getValue }] },
 			]),
-		);
+		)
 	}
 
 	handleAutorunCreated(autorun: AutorunObserver): void {
 		if (!this._isIncluded(autorun)) {
-			return;
+			return
 		}
 
-		this.changedObservablesSets.set(autorun, new Set());
+		this.changedObservablesSets.set(autorun, new Set())
 	}
 
 	handleAutorunDisposed(_autorun: AutorunObserver): void {}
 
 	handleAutorunDependencyChanged(autorun: AutorunObserver, observable: IObservable<any>, _change: unknown): void {
 		if (!this._isIncluded(autorun)) {
-			return;
+			return
 		}
 
-		this.changedObservablesSets.get(autorun)!.add(observable);
+		this.changedObservablesSets.get(autorun)!.add(observable)
 	}
 
 	handleAutorunStarted(autorun: AutorunObserver): void {
-		const changedObservables = this.changedObservablesSets.get(autorun);
+		const changedObservables = this.changedObservablesSets.get(autorun)
 		if (!changedObservables) {
-			return;
+			return
 		}
 
 		if (this._isIncluded(autorun)) {
@@ -210,20 +210,20 @@ export class ConsoleObservableLogger implements IObservableLogger {
 					this.formatChanges(changedObservables),
 					{ data: [{ fn: autorun._debugNameData.referenceFn ?? autorun._runFn }] },
 				]),
-			);
+			)
 		}
-		changedObservables.clear();
-		this.indentation++;
+		changedObservables.clear()
+		this.indentation++
 	}
 
 	handleAutorunFinished(_autorun: AutorunObserver): void {
-		this.indentation--;
+		this.indentation--
 	}
 
 	handleBeginTransaction(transaction: TransactionImpl): void {
-		let transactionName = transaction.getDebugName();
+		let transactionName = transaction.getDebugName()
 		if (transactionName === undefined) {
-			transactionName = '';
+			transactionName = ''
 		}
 		if (this._isIncluded(transaction)) {
 			console.log(
@@ -232,53 +232,50 @@ export class ConsoleObservableLogger implements IObservableLogger {
 					styled(transactionName, { color: 'BlueViolet' }),
 					{ data: [{ fn: transaction._fn }] },
 				]),
-			);
+			)
 		}
-		this.indentation++;
+		this.indentation++
 	}
 
 	handleEndTransaction(): void {
-		this.indentation--;
+		this.indentation--
 	}
 }
-type ConsoleText =
-	| (ConsoleText | undefined)[]
-	| { text: string; style: string; data?: unknown[] }
-	| { data: unknown[] };
+type ConsoleText = (ConsoleText | undefined)[] | { text: string; style: string; data?: unknown[] } | { data: unknown[] }
 function consoleTextToArgs(text: ConsoleText): unknown[] {
-	const styles = new Array<any>();
-	const data: unknown[] = [];
-	let firstArg = '';
+	const styles = new Array<any>()
+	const data: unknown[] = []
+	let firstArg = ''
 
 	function process(t: ConsoleText): void {
 		if ('length' in t) {
 			for (const item of t) {
 				if (item) {
-					process(item);
+					process(item)
 				}
 			}
 		} else if ('text' in t) {
-			firstArg += `%c${t.text}`;
-			styles.push(t.style);
+			firstArg += `%c${t.text}`
+			styles.push(t.style)
 			if (t.data) {
-				data.push(...t.data);
+				data.push(...t.data)
 			}
 		} else if ('data' in t) {
-			data.push(...t.data);
+			data.push(...t.data)
 		}
 	}
 
-	process(text);
+	process(text)
 
-	const result = [firstArg, ...styles];
-	result.push(...data);
-	return result;
+	const result = [firstArg, ...styles]
+	result.push(...data)
+	return result
 }
 function normalText(text: string): ConsoleText {
-	return styled(text, { color: 'black' });
+	return styled(text, { color: 'black' })
 }
 function formatKind(kind: string): ConsoleText {
-	return styled(padStr(`${kind}: `, 10), { color: 'black', bold: true });
+	return styled(padStr(`${kind}: `, 10), { color: 'black', bold: true })
 }
 function styled(
 	text: string,
@@ -288,115 +285,115 @@ function styled(
 ): ConsoleText {
 	function objToCss(styleObj: Record<string, string>): string {
 		return Object.entries(styleObj).reduce((styleString, [propName, propValue]) => {
-			return `${styleString}${propName}:${propValue};`;
-		}, '');
+			return `${styleString}${propName}:${propValue};`
+		}, '')
 	}
 
 	const style: Record<string, string> = {
 		color: options.color,
-	};
+	}
 	if (options.strikeThrough) {
-		style['text-decoration'] = 'line-through';
+		style['text-decoration'] = 'line-through'
 	}
 	if (options.bold) {
-		style['font-weight'] = 'bold';
+		style['font-weight'] = 'bold'
 	}
 
 	return {
 		text,
 		style: objToCss(style),
-	};
+	}
 }
 
 export function formatValue(value: unknown, availableLen: number): string {
 	switch (typeof value) {
 		case 'number':
-			return '' + value;
+			return '' + value
 		case 'string':
 			if (value.length + 2 <= availableLen) {
-				return `"${value}"`;
+				return `"${value}"`
 			}
-			return `"${value.substr(0, availableLen - 7)}"+...`;
+			return `"${value.substr(0, availableLen - 7)}"+...`
 
 		case 'boolean':
-			return value ? 'true' : 'false';
+			return value ? 'true' : 'false'
 		case 'undefined':
-			return 'undefined';
+			return 'undefined'
 		case 'object':
 			if (value === null) {
-				return 'null';
+				return 'null'
 			}
 			if (Array.isArray(value)) {
-				return formatArray(value, availableLen);
+				return formatArray(value, availableLen)
 			}
-			return formatObject(value, availableLen);
+			return formatObject(value, availableLen)
 		case 'symbol':
-			return value.toString();
+			return value.toString()
 		case 'function':
-			return `[[Function${value.name ? ' ' + value.name : ''}]]`;
+			return `[[Function${value.name ? ' ' + value.name : ''}]]`
 		default:
-			return '' + value;
+			return '' + value
 	}
 }
 
 function formatArray(value: unknown[], availableLen: number): string {
-	let result = '[ ';
-	let first = true;
+	let result = '[ '
+	let first = true
 	for (const val of value) {
 		if (!first) {
-			result += ', ';
+			result += ', '
 		}
 		if (result.length - 5 > availableLen) {
-			result += '...';
-			break;
+			result += '...'
+			break
 		}
-		first = false;
-		result += `${formatValue(val, availableLen - result.length)}`;
+		first = false
+		result += `${formatValue(val, availableLen - result.length)}`
 	}
-	result += ' ]';
-	return result;
+	result += ' ]'
+	return result
 }
 
 function formatObject(value: object, availableLen: number): string {
 	if (typeof value.toString === 'function' && value.toString !== Object.prototype.toString) {
 		// oxlint-disable-next-line typescript/no-base-to-string
-		const val = value.toString();
+		const val = value.toString()
 		if (val.length <= availableLen) {
-			return val;
+			return val
 		}
-		return val.substring(0, availableLen - 3) + '...';
+		return val.substring(0, availableLen - 3) + '...'
 	}
 
-	const className = getClassName(value);
+	const className = getClassName(value)
 
-	let result = className ? className + '(' : '{ ';
-	let first = true;
+	let result = className ? className + '(' : '{ '
+	let first = true
 	for (const [key, val] of Object.entries(value)) {
 		if (!first) {
-			result += ', ';
+			result += ', '
 		}
 		if (result.length - 5 > availableLen) {
-			result += '...';
-			break;
+			result += '...'
+			break
 		}
-		first = false;
-		result += `${key}: ${formatValue(val, availableLen - result.length)}`;
+		first = false
+		result += `${key}: ${formatValue(val, availableLen - result.length)}`
 	}
-	result += className ? ')' : ' }';
-	return result;
+	result += className ? ')' : ' }'
+	return result
 }
 
 function repeat(str: string, count: number): string {
-	let result = '';
+	let result = ''
 	for (let i = 1; i <= count; i++) {
-		result += str;
+		result += str
 	}
-	return result;
+	return result
 }
 
 function padStr(str: string, length: number): string {
 	while (str.length < length) {
-		str += ' ';
+		str += ' '
 	}
-	return str;
+	return str
 }

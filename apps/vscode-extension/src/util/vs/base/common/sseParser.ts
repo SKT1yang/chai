@@ -10,28 +10,28 @@ export interface ISSEEvent {
 	/**
 	 * The event type. If not specified, the type is "message".
 	 */
-	type: string;
+	type: string
 
 	/**
 	 * The event data.
 	 */
-	data: string;
+	data: string
 
 	/**
 	 * The last event ID, used for reconnection.
 	 */
-	id?: string;
+	id?: string
 
 	/**
 	 * Reconnection time in milliseconds.
 	 */
-	retry?: number;
+	retry?: number
 }
 
 /**
  * Callback function type for event dispatch.
  */
-export type SSEEventHandler = (event: ISSEEvent) => void;
+export type SSEEventHandler = (event: ISSEEvent) => void
 
 const enum Chr {
 	CR = 13, // '\r'
@@ -44,35 +44,35 @@ const enum Chr {
  * Parser for Server-Sent Events (SSE) streams.
  */
 export class SSEParser {
-	private dataBuffer = '';
-	private eventTypeBuffer = '';
-	private currentEventId?: string;
-	private lastEventIdBuffer?: string;
-	private reconnectionTime?: number;
-	private buffer: Uint8Array[] = [];
-	private endedOnCR = false;
-	private readonly onEventHandler: SSEEventHandler;
-	private readonly decoder: TextDecoder;
+	private dataBuffer = ''
+	private eventTypeBuffer = ''
+	private currentEventId?: string
+	private lastEventIdBuffer?: string
+	private reconnectionTime?: number
+	private buffer: Uint8Array[] = []
+	private endedOnCR = false
+	private readonly onEventHandler: SSEEventHandler
+	private readonly decoder: TextDecoder
 	/**
 	 * Creates a new SSE parser.
 	 * @param onEvent The callback to invoke when an event is dispatched.
 	 */
 	constructor(onEvent: SSEEventHandler) {
-		this.onEventHandler = onEvent;
-		this.decoder = new TextDecoder('utf-8');
+		this.onEventHandler = onEvent
+		this.decoder = new TextDecoder('utf-8')
 	}
 
 	/**
 	 * Gets the last event ID received by this parser.
 	 */
 	public getLastEventId(): string | undefined {
-		return this.lastEventIdBuffer;
+		return this.lastEventIdBuffer
 	}
 	/**
 	 * Gets the reconnection time in milliseconds, if one was specified by the server.
 	 */
 	public getReconnectionTime(): number | undefined {
-		return this.reconnectionTime;
+		return this.reconnectionTime
 	}
 
 	/**
@@ -81,41 +81,41 @@ export class SSEParser {
 	 */
 	public feed(chunk: Uint8Array): void {
 		if (chunk.length === 0) {
-			return;
+			return
 		}
 
-		let offset = 0;
+		let offset = 0
 
 		// If the data stream was bifurcated between a CR and LF, avoid processing the CR as an extra newline
 		if (this.endedOnCR && chunk[0] === Chr.LF) {
-			offset++;
+			offset++
 		}
-		this.endedOnCR = false;
+		this.endedOnCR = false
 
 		// Process complete lines from the buffer
 		while (offset < chunk.length) {
-			const indexCR = chunk.indexOf(Chr.CR, offset);
-			const indexLF = chunk.indexOf(Chr.LF, offset);
-			const index = indexCR === -1 ? indexLF : indexLF === -1 ? indexCR : Math.min(indexCR, indexLF);
+			const indexCR = chunk.indexOf(Chr.CR, offset)
+			const indexLF = chunk.indexOf(Chr.LF, offset)
+			const index = indexCR === -1 ? indexLF : indexLF === -1 ? indexCR : Math.min(indexCR, indexLF)
 			if (index === -1) {
-				break;
+				break
 			}
 
-			let str = '';
+			let str = ''
 			for (const buf of this.buffer) {
-				str += this.decoder.decode(buf, { stream: true });
+				str += this.decoder.decode(buf, { stream: true })
 			}
-			str += this.decoder.decode(chunk.subarray(offset, index));
-			this.processLine(str);
+			str += this.decoder.decode(chunk.subarray(offset, index))
+			this.processLine(str)
 
-			this.buffer.length = 0;
-			offset = index + (chunk[index] === Chr.CR && chunk[index + 1] === Chr.LF ? 2 : 1);
+			this.buffer.length = 0
+			offset = index + (chunk[index] === Chr.CR && chunk[index + 1] === Chr.LF ? 2 : 1)
 		}
 
 		if (offset < chunk.length) {
-			this.buffer.push(chunk.subarray(offset));
+			this.buffer.push(chunk.subarray(offset))
 		} else {
-			this.endedOnCR = chunk[chunk.length - 1] === Chr.CR;
+			this.endedOnCR = chunk[chunk.length - 1] === Chr.CR
 		}
 	}
 	/**
@@ -123,35 +123,35 @@ export class SSEParser {
 	 */
 	private processLine(line: string): void {
 		if (!line.length) {
-			this.dispatchEvent();
-			return;
+			this.dispatchEvent()
+			return
 		}
 
 		if (line.startsWith(':')) {
-			return;
+			return
 		}
 
 		// Parse the field name and value
-		let field: string;
-		let value: string;
+		let field: string
+		let value: string
 
-		const colonIndex = line.indexOf(':');
+		const colonIndex = line.indexOf(':')
 		if (colonIndex === -1) {
 			// Line with no colon - the entire line is the field name, value is empty
-			field = line;
-			value = '';
+			field = line
+			value = ''
 		} else {
 			// Line with a colon - split into field name and value
-			field = line.substring(0, colonIndex);
-			value = line.substring(colonIndex + 1);
+			field = line.substring(0, colonIndex)
+			value = line.substring(colonIndex + 1)
 
 			// If value starts with a space, remove it
 			if (value.startsWith(' ')) {
-				value = value.substring(1);
+				value = value.substring(1)
 			}
 		}
 
-		this.processField(field, value);
+		this.processField(field, value)
 	}
 	/**
 	 * Processes a field with the given name and value.
@@ -159,30 +159,30 @@ export class SSEParser {
 	private processField(field: string, value: string): void {
 		switch (field) {
 			case 'event':
-				this.eventTypeBuffer = value;
-				break;
+				this.eventTypeBuffer = value
+				break
 
 			case 'data':
 				// Append the value to the data buffer, followed by a newline
-				this.dataBuffer += value;
-				this.dataBuffer += '\n';
-				break;
+				this.dataBuffer += value
+				this.dataBuffer += '\n'
+				break
 
 			case 'id':
 				// If the field value doesn't contain NULL, set the last event ID buffer
 				if (!value.includes('\0')) {
-					this.currentEventId = this.lastEventIdBuffer = value;
+					this.currentEventId = this.lastEventIdBuffer = value
 				} else {
-					this.currentEventId = undefined;
+					this.currentEventId = undefined
 				}
-				break;
+				break
 
 			case 'retry':
 				// If the field value consists only of ASCII digits, set the reconnection time
 				if (/^\d+$/.test(value)) {
-					this.reconnectionTime = parseInt(value, 10);
+					this.reconnectionTime = parseInt(value, 10)
 				}
-				break;
+				break
 
 			// Ignore any other fields
 		}
@@ -193,45 +193,45 @@ export class SSEParser {
 	private dispatchEvent(): void {
 		// If the data buffer is empty, reset the buffers and return
 		if (this.dataBuffer === '') {
-			this.dataBuffer = '';
-			this.eventTypeBuffer = '';
-			return;
+			this.dataBuffer = ''
+			this.eventTypeBuffer = ''
+			return
 		}
 
 		// If the data buffer's last character is a newline, remove it
 		if (this.dataBuffer.endsWith('\n')) {
-			this.dataBuffer = this.dataBuffer.substring(0, this.dataBuffer.length - 1);
+			this.dataBuffer = this.dataBuffer.substring(0, this.dataBuffer.length - 1)
 		}
 
 		// Create and dispatch the event
 		const event: ISSEEvent = {
 			type: this.eventTypeBuffer || 'message',
 			data: this.dataBuffer,
-		};
+		}
 
 		// Add optional fields if they exist
 		if (this.currentEventId !== undefined) {
-			event.id = this.currentEventId;
+			event.id = this.currentEventId
 		}
 
 		if (this.reconnectionTime !== undefined) {
-			event.retry = this.reconnectionTime;
+			event.retry = this.reconnectionTime
 		}
 
 		// Dispatch the event
-		this.onEventHandler(event);
+		this.onEventHandler(event)
 
 		// Reset the data and event type buffers
-		this.reset();
+		this.reset()
 	}
 
 	/**
 	 * Resets the parser state.
 	 */
 	public reset(): void {
-		this.dataBuffer = '';
-		this.eventTypeBuffer = '';
-		this.currentEventId = undefined;
+		this.dataBuffer = ''
+		this.eventTypeBuffer = ''
+		this.currentEventId = undefined
 		// Note: lastEventIdBuffer is not reset as it's used for reconnection
 	}
 }

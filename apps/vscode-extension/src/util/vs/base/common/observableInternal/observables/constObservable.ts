@@ -1,24 +1,24 @@
-import { IObservable, IObserver, IObservableWithChange } from '../base';
-import { ConvenientObservable } from './baseObservable';
+import { IObservable, IObserver, IObservableWithChange } from '../base'
+import { ConvenientObservable } from './baseObservable'
 
 /**
  * Represents an efficient observable whose value never changes.
  */
 
 export function constObservable<T>(value: T): IObservable<T> {
-	return new ConstObservable(value);
+	return new ConstObservable(value)
 }
 class ConstObservable<T> extends ConvenientObservable<T, void> {
 	constructor(private readonly value: T) {
-		super();
+		super()
 	}
 
 	public override get debugName(): string {
-		return this.toString();
+		return this.toString()
 	}
 
 	public get(): T {
-		return this.value;
+		return this.value
 	}
 	public addObserver(_observer: IObserver): void {
 		// NO OP
@@ -28,10 +28,10 @@ class ConstObservable<T> extends ConvenientObservable<T, void> {
 	}
 
 	override log(): IObservableWithChange<T, void> {
-		return this;
+		return this
 	}
 
 	override toString(): string {
-		return `Const: ${globalThis.String(this.value)}`;
+		return `Const: ${globalThis.String(this.value)}`
 	}
 }

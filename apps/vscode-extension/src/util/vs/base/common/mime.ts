@@ -1,4 +1,4 @@
-import { extname } from './path';
+import { extname } from './path'
 
 export const Mimes = Object.freeze({
 	text: 'text/plain',
@@ -8,10 +8,10 @@ export const Mimes = Object.freeze({
 	latex: 'text/latex',
 	uriList: 'text/uri-list',
 	html: 'text/html',
-});
+})
 
 interface MapExtToMediaMimes {
-	[index: string]: string | string[];
+	[index: string]: string | string[]
 }
 
 const mapExtToTextMimes: Record<string, string> = {
@@ -24,7 +24,7 @@ const mapExtToTextMimes: Record<string, string> = {
 	'.mjs': 'text/javascript',
 	'.txt': 'text/plain',
 	'.xml': 'text/xml',
-};
+}
 
 // Known media mimes that we can handle
 const mapExtToMediaMimes: MapExtToMediaMimes = {
@@ -77,52 +77,52 @@ const mapExtToMediaMimes: MapExtToMediaMimes = {
 	'.wma': 'audio/x-ms-wma',
 	'.wmv': 'video/x-ms-wmv',
 	'.woff': 'application/font-woff',
-};
+}
 
 export function getMediaOrTextMime(path: string): string | undefined {
-	const ext = extname(path);
-	const textMime = mapExtToTextMimes[ext.toLowerCase()];
+	const ext = extname(path)
+	const textMime = mapExtToTextMimes[ext.toLowerCase()]
 	if (textMime !== undefined) {
-		return textMime;
+		return textMime
 	} else {
-		return getMediaMime(path);
+		return getMediaMime(path)
 	}
 }
 
 export function getMediaMime(path: string): string | undefined {
-	const ext = extname(path);
-	const mimeType = mapExtToMediaMimes[ext.toLowerCase()];
-	return Array.isArray(mimeType) ? mimeType[0] : mimeType;
+	const ext = extname(path)
+	const mimeType = mapExtToMediaMimes[ext.toLowerCase()]
+	return Array.isArray(mimeType) ? mimeType[0] : mimeType
 }
 
 export function getExtensionForMimeType(mimeType: string): string | undefined {
 	for (const extension in mapExtToMediaMimes) {
-		const value = mapExtToMediaMimes[extension];
+		const value = mapExtToMediaMimes[extension]
 		if (Array.isArray(value) ? value.includes(mimeType) : value === mimeType) {
-			return extension;
+			return extension
 		}
 	}
 
-	return undefined;
+	return undefined
 }
 
-const _simplePattern = /^(.+)\/(.+?)(;.+)?$/;
+const _simplePattern = /^(.+)\/(.+?)(;.+)?$/
 
-export function normalizeMimeType(mimeType: string): string;
-export function normalizeMimeType(mimeType: string, strict: true): string | undefined;
+export function normalizeMimeType(mimeType: string): string
+export function normalizeMimeType(mimeType: string, strict: true): string | undefined
 export function normalizeMimeType(mimeType: string, strict?: true): string | undefined {
-	const match = _simplePattern.exec(mimeType);
+	const match = _simplePattern.exec(mimeType)
 	if (!match) {
-		return strict ? undefined : mimeType;
+		return strict ? undefined : mimeType
 	}
 	// https://datatracker.ietf.org/doc/html/rfc2045#section-5.1
 	// media and subtype must ALWAYS be lowercase, parameter not
-	return `${match[1].toLowerCase()}/${match[2].toLowerCase()}${match[3] ?? ''}`;
+	return `${match[1].toLowerCase()}/${match[2].toLowerCase()}${match[3] ?? ''}`
 }
 
 /**
  * Whether the provided mime type is a text stream like `stdout`, `stderr`.
  */
 export function isTextStreamMime(mimeType: string) {
-	return ['application/vnd.code.notebook.stdout', 'application/vnd.code.notebook.stderr'].includes(mimeType);
+	return ['application/vnd.code.notebook.stdout', 'application/vnd.code.notebook.stderr'].includes(mimeType)
 }

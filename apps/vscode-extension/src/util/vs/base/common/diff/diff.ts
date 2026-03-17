@@ -259,8 +259,10 @@ export class LcsDiff {
 		this._originalSequence = originalSequence
 		this._modifiedSequence = modifiedSequence
 
-		const [originalStringElements, originalElementsOrHash, originalHasStrings] = LcsDiff._getElements(originalSequence)
-		const [modifiedStringElements, modifiedElementsOrHash, modifiedHasStrings] = LcsDiff._getElements(modifiedSequence)
+		const [originalStringElements, originalElementsOrHash, originalHasStrings] =
+			LcsDiff._getElements(originalSequence)
+		const [modifiedStringElements, modifiedElementsOrHash, modifiedHasStrings] =
+			LcsDiff._getElements(modifiedSequence)
 
 		this._hasStrings = originalHasStrings && modifiedHasStrings
 		this._originalStringElements = originalStringElements
@@ -410,18 +412,30 @@ export class LcsDiff {
 			let changes: DiffChange[]
 
 			if (modifiedStart <= modifiedEnd) {
-				Debug.Assert(originalStart === originalEnd + 1, 'originalStart should only be one more than originalEnd')
+				Debug.Assert(
+					originalStart === originalEnd + 1,
+					'originalStart should only be one more than originalEnd',
+				)
 
 				// All insertions
 				changes = [new DiffChange(originalStart, 0, modifiedStart, modifiedEnd - modifiedStart + 1)]
 			} else if (originalStart <= originalEnd) {
-				Debug.Assert(modifiedStart === modifiedEnd + 1, 'modifiedStart should only be one more than modifiedEnd')
+				Debug.Assert(
+					modifiedStart === modifiedEnd + 1,
+					'modifiedStart should only be one more than modifiedEnd',
+				)
 
 				// All deletions
 				changes = [new DiffChange(originalStart, originalEnd - originalStart + 1, modifiedStart, 0)]
 			} else {
-				Debug.Assert(originalStart === originalEnd + 1, 'originalStart should only be one more than originalEnd')
-				Debug.Assert(modifiedStart === modifiedEnd + 1, 'modifiedStart should only be one more than modifiedEnd')
+				Debug.Assert(
+					originalStart === originalEnd + 1,
+					'originalStart should only be one more than originalEnd',
+				)
+				Debug.Assert(
+					modifiedStart === modifiedEnd + 1,
+					'modifiedStart should only be one more than modifiedEnd',
+				)
 
 				// Identical sequences - No differences
 				changes = []
@@ -491,7 +505,12 @@ export class LcsDiff {
 
 		// If we hit here, we quit early, and so can't return anything meaningful
 		return [
-			new DiffChange(originalStart, originalEnd - originalStart + 1, modifiedStart, modifiedEnd - modifiedStart + 1),
+			new DiffChange(
+				originalStart,
+				originalEnd - originalStart + 1,
+				modifiedStart,
+				modifiedEnd - modifiedStart + 1,
+			),
 		]
 	}
 
@@ -976,12 +995,24 @@ export class LcsDiff {
 				// the index of the diagonal base index
 				let temp = new Int32Array(diagonalForwardEnd - diagonalForwardStart + 2)
 				temp[0] = diagonalForwardBase - diagonalForwardStart + 1
-				MyArray.Copy2(forwardPoints, diagonalForwardStart, temp, 1, diagonalForwardEnd - diagonalForwardStart + 1)
+				MyArray.Copy2(
+					forwardPoints,
+					diagonalForwardStart,
+					temp,
+					1,
+					diagonalForwardEnd - diagonalForwardStart + 1,
+				)
 				this.m_forwardHistory.push(temp)
 
 				temp = new Int32Array(diagonalReverseEnd - diagonalReverseStart + 2)
 				temp[0] = diagonalReverseBase - diagonalReverseStart + 1
-				MyArray.Copy2(reversePoints, diagonalReverseStart, temp, 1, diagonalReverseEnd - diagonalReverseStart + 1)
+				MyArray.Copy2(
+					reversePoints,
+					diagonalReverseStart,
+					temp,
+					1,
+					diagonalReverseEnd - diagonalReverseStart + 1,
+				)
 				this.m_reverseHistory.push(temp)
 			}
 		}
@@ -1022,8 +1053,10 @@ export class LcsDiff {
 		// Shift all the changes down first
 		for (let i = 0; i < changes.length; i++) {
 			const change = changes[i]
-			const originalStop = i < changes.length - 1 ? changes[i + 1].originalStart : this._originalElementsOrHash.length
-			const modifiedStop = i < changes.length - 1 ? changes[i + 1].modifiedStart : this._modifiedElementsOrHash.length
+			const originalStop =
+				i < changes.length - 1 ? changes[i + 1].originalStart : this._originalElementsOrHash.length
+			const modifiedStop =
+				i < changes.length - 1 ? changes[i + 1].modifiedStart : this._modifiedElementsOrHash.length
 			const checkOriginal = change.originalLength > 0
 			const checkModified = change.modifiedLength > 0
 
@@ -1031,7 +1064,10 @@ export class LcsDiff {
 				change.originalStart + change.originalLength < originalStop &&
 				change.modifiedStart + change.modifiedLength < modifiedStop &&
 				(!checkOriginal ||
-					this.OriginalElementsAreEqual(change.originalStart, change.originalStart + change.originalLength)) &&
+					this.OriginalElementsAreEqual(
+						change.originalStart,
+						change.originalStart + change.originalLength,
+					)) &&
 				(!checkModified ||
 					this.ModifiedElementsAreEqual(change.modifiedStart, change.modifiedStart + change.modifiedLength))
 			) {
@@ -1088,11 +1124,17 @@ export class LcsDiff {
 					break
 				}
 
-				if (checkOriginal && !this.OriginalElementsAreEqual(originalStart, originalStart + change.originalLength)) {
+				if (
+					checkOriginal &&
+					!this.OriginalElementsAreEqual(originalStart, originalStart + change.originalLength)
+				) {
 					break
 				}
 
-				if (checkModified && !this.ModifiedElementsAreEqual(modifiedStart, modifiedStart + change.modifiedLength)) {
+				if (
+					checkModified &&
+					!this.ModifiedElementsAreEqual(modifiedStart, modifiedStart + change.modifiedLength)
+				) {
 					break
 				}
 
@@ -1456,7 +1498,9 @@ function computeLevenshteinDistanceForLongStrings(firstString: string, secondStr
 			const matchBit = (verticalBitArray[(i / 32) | 0] >>> i) & 1
 			const combinedVector = equalityMask | negativeVector
 			const combinedHorizontalVector =
-				((((equalityMask | matchBit) & positiveVector) + positiveVector) ^ positiveVector) | equalityMask | matchBit
+				((((equalityMask | matchBit) & positiveVector) + positiveVector) ^ positiveVector) |
+				equalityMask |
+				matchBit
 			let positiveHorizontalVector = negativeVector | ~(combinedHorizontalVector | positiveVector)
 			let negativeHorizontalVector = positiveVector & combinedHorizontalVector
 			if ((positiveHorizontalVector >>> 31) ^ previousBit) {

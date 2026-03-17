@@ -1,6 +1,6 @@
-import { defineConfig, type RolldownOptions } from 'rolldown';
+import { defineConfig, type RolldownOptions } from 'rolldown'
 
-const input: RolldownOptions['input'] = ['src/extension/extension/vscode-node/extension.ts'];
+const input: RolldownOptions['input'] = ['src/extension/extension/vscode-node/extension.ts']
 
 const output: RolldownOptions['output'] = {
 	sourcemap: true,
@@ -9,7 +9,7 @@ const output: RolldownOptions['output'] = {
 	minify: false,
 	cleanDir: true,
 	file: 'dist/main.js',
-};
+}
 
 export default defineConfig({
 	input,
@@ -19,4 +19,4 @@ export default defineConfig({
 	transform: {
 		target: 'node16',
 	},
-});
+})

@@ -1,4 +1,4 @@
-import * as arrays from './arrays';
+import * as arrays from './arrays'
 
 /*
  * Each function in this file which offers an equality comparison, has an accompanying
@@ -8,21 +8,21 @@ import * as arrays from './arrays';
  */
 
 /** Represents a function that decides if two values are equal. */
-export type EqualityComparer<T> = (a: T, b: T) => boolean;
+export type EqualityComparer<T> = (a: T, b: T) => boolean
 
 export interface IEquatable<T> {
-	equals(other: T): boolean;
+	equals(other: T): boolean
 }
 
 /**
  * Compares two items for equality using strict equality.
  */
 export function strictEquals<T>(a: T, b: T): boolean {
-	return a === b;
+	return a === b
 }
 
 export function strictEqualsC<T>(): EqualityComparer<T> {
-	return (a, b) => a === b;
+	return (a, b) => a === b
 }
 
 /**
@@ -30,7 +30,7 @@ export function strictEqualsC<T>(): EqualityComparer<T> {
  * By default, strict equality is used to compare elements, but a custom equality comparer can be provided.
  */
 export function arrayEquals<T>(a: readonly T[], b: readonly T[], itemEquals?: EqualityComparer<T>): boolean {
-	return arrays.equals(a, b, itemEquals ?? strictEquals);
+	return arrays.equals(a, b, itemEquals ?? strictEquals)
 }
 
 /**
@@ -38,7 +38,7 @@ export function arrayEquals<T>(a: readonly T[], b: readonly T[], itemEquals?: Eq
  * By default, strict equality is used to compare elements, but a custom equality comparer can be provided.
  */
 export function arrayEqualsC<T>(itemEquals?: EqualityComparer<T>): EqualityComparer<readonly T[]> {
-	return (a, b) => arrays.equals(a, b, itemEquals ?? strictEquals);
+	return (a, b) => arrays.equals(a, b, itemEquals ?? strictEquals)
 }
 
 /**
@@ -46,51 +46,51 @@ export function arrayEqualsC<T>(itemEquals?: EqualityComparer<T>): EqualityCompa
  */
 export function structuralEquals<T>(a: T, b: T): boolean {
 	if (a === b) {
-		return true;
+		return true
 	}
 
 	if (Array.isArray(a) && Array.isArray(b)) {
 		if (a.length !== b.length) {
-			return false;
+			return false
 		}
 		for (let i = 0; i < a.length; i++) {
 			if (!structuralEquals(a[i], b[i])) {
-				return false;
+				return false
 			}
 		}
-		return true;
+		return true
 	}
 
 	if (a && typeof a === 'object' && b && typeof b === 'object') {
 		if (Object.getPrototypeOf(a) === Object.prototype && Object.getPrototypeOf(b) === Object.prototype) {
-			const aObj = a as Record<string, unknown>;
-			const bObj = b as Record<string, unknown>;
-			const keysA = Object.keys(aObj);
-			const keysB = Object.keys(bObj);
-			const keysBSet = new Set(keysB);
+			const aObj = a as Record<string, unknown>
+			const bObj = b as Record<string, unknown>
+			const keysA = Object.keys(aObj)
+			const keysB = Object.keys(bObj)
+			const keysBSet = new Set(keysB)
 
 			if (keysA.length !== keysB.length) {
-				return false;
+				return false
 			}
 
 			for (const key of keysA) {
 				if (!keysBSet.has(key)) {
-					return false;
+					return false
 				}
 				if (!structuralEquals(aObj[key], bObj[key])) {
-					return false;
+					return false
 				}
 			}
 
-			return true;
+			return true
 		}
 	}
 
-	return false;
+	return false
 }
 
 export function structuralEqualsC<T>(): EqualityComparer<T> {
-	return (a, b) => structuralEquals(a, b);
+	return (a, b) => structuralEquals(a, b)
 }
 
 /**
@@ -98,57 +98,57 @@ export function structuralEqualsC<T>(): EqualityComparer<T> {
  * (assuming that a and b are not cyclic structures and nothing extends globalThis Array).
  */
 export function getStructuralKey(t: unknown): string {
-	return JSON.stringify(toNormalizedJsonStructure(t));
+	return JSON.stringify(toNormalizedJsonStructure(t))
 }
 
-let objectId = 0;
-const objIds = new WeakMap<object, number>();
+let objectId = 0
+const objIds = new WeakMap<object, number>()
 
 function toNormalizedJsonStructure(t: unknown): unknown {
 	if (Array.isArray(t)) {
-		return t.map(toNormalizedJsonStructure);
+		return t.map(toNormalizedJsonStructure)
 	}
 
 	if (t && typeof t === 'object') {
 		if (Object.getPrototypeOf(t) === Object.prototype) {
-			const tObj = t as Record<string, unknown>;
-			const res: Record<string, unknown> = Object.create(null);
+			const tObj = t as Record<string, unknown>
+			const res: Record<string, unknown> = Object.create(null)
 			for (const key of Object.keys(tObj).sort()) {
-				res[key] = toNormalizedJsonStructure(tObj[key]);
+				res[key] = toNormalizedJsonStructure(tObj[key])
 			}
-			return res;
+			return res
 		} else {
-			let objId = objIds.get(t);
+			let objId = objIds.get(t)
 			if (objId === undefined) {
-				objId = objectId++;
-				objIds.set(t, objId);
+				objId = objectId++
+				objIds.set(t, objId)
 			}
 			// Random string to prevent collisions
-			return objId + '----2b76a038c20c4bcc';
+			return objId + '----2b76a038c20c4bcc'
 		}
 	}
-	return t;
+	return t
 }
 
 /**
  * Two items are considered equal, if their stringified representations are equal.
  */
 export function jsonStringifyEquals<T>(a: T, b: T): boolean {
-	return JSON.stringify(a) === JSON.stringify(b);
+	return JSON.stringify(a) === JSON.stringify(b)
 }
 
 /**
  * Two items are considered equal, if their stringified representations are equal.
  */
 export function jsonStringifyEqualsC<T>(): EqualityComparer<T> {
-	return (a, b) => JSON.stringify(a) === JSON.stringify(b);
+	return (a, b) => JSON.stringify(a) === JSON.stringify(b)
 }
 
 /**
  * Uses `item.equals(other)` to determine equality.
  */
 export function thisEqualsC<T extends IEquatable<T>>(): EqualityComparer<T> {
-	return (a, b) => a.equals(b);
+	return (a, b) => a.equals(b)
 }
 
 /**
@@ -160,9 +160,9 @@ export function equalsIfDefined<T>(
 	equals: EqualityComparer<T>,
 ): boolean {
 	if (v1 === undefined || v1 === null || v2 === undefined || v2 === null) {
-		return v2 === v1;
+		return v2 === v1
 	}
-	return equals(v1, v2);
+	return equals(v1, v2)
 }
 
 /**
@@ -171,10 +171,10 @@ export function equalsIfDefined<T>(
 export function equalsIfDefinedC<T>(equals: EqualityComparer<T>): EqualityComparer<T | undefined | null> {
 	return (v1, v2) => {
 		if (v1 === undefined || v1 === null || v2 === undefined || v2 === null) {
-			return v2 === v1;
+			return v2 === v1
 		}
-		return equals(v1, v2);
-	};
+		return equals(v1, v2)
+	}
 }
 
 /**
@@ -184,20 +184,20 @@ export function equalsIfDefinedC<T>(equals: EqualityComparer<T>): EqualityCompar
  * The `*C` variant allows for easier composition of equality comparers and improved type-inference.
  */
 export namespace equals {
-	export const strict = strictEquals;
-	export const strictC = strictEqualsC;
+	export const strict = strictEquals
+	export const strictC = strictEqualsC
 
-	export const array = arrayEquals;
-	export const arrayC = arrayEqualsC;
+	export const array = arrayEquals
+	export const arrayC = arrayEqualsC
 
-	export const structural = structuralEquals;
-	export const structuralC = structuralEqualsC;
+	export const structural = structuralEquals
+	export const structuralC = structuralEqualsC
 
-	export const jsonStringify = jsonStringifyEquals;
-	export const jsonStringifyC = jsonStringifyEqualsC;
+	export const jsonStringify = jsonStringifyEquals
+	export const jsonStringifyC = jsonStringifyEqualsC
 
-	export const thisC = thisEqualsC;
+	export const thisC = thisEqualsC
 
-	export const ifDefined = equalsIfDefined;
-	export const ifDefinedC = equalsIfDefinedC;
+	export const ifDefined = equalsIfDefined
+	export const ifDefinedC = equalsIfDefinedC
 }

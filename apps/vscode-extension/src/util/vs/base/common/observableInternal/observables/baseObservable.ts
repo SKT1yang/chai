@@ -1,101 +1,101 @@
-import { IObservableWithChange, IObserver, IReader, IObservable } from '../base';
-import { DisposableStore } from '../commonFacade/deps';
-import { DebugLocation } from '../debugLocation';
-import { DebugOwner, getFunctionName } from '../debugName';
-import { debugGetObservableGraph } from '../logging/debugGetDependencyGraph';
-import { getLogger, logObservable } from '../logging/logging';
-import type { keepObserved, recomputeInitiallyAndOnChange } from '../utils/utils';
-import { derivedOpts } from './derived';
+import { IObservableWithChange, IObserver, IReader, IObservable } from '../base'
+import { DisposableStore } from '../commonFacade/deps'
+import { DebugLocation } from '../debugLocation'
+import { DebugOwner, getFunctionName } from '../debugName'
+import { debugGetObservableGraph } from '../logging/debugGetDependencyGraph'
+import { getLogger, logObservable } from '../logging/logging'
+import type { keepObserved, recomputeInitiallyAndOnChange } from '../utils/utils'
+import { derivedOpts } from './derived'
 
-let _derived: typeof derivedOpts;
+let _derived: typeof derivedOpts
 /**
  * @internal
  * This is to allow splitting files.
  */
 export function _setDerivedOpts(derived: typeof _derived) {
-	_derived = derived;
+	_derived = derived
 }
 
-let _recomputeInitiallyAndOnChange: typeof recomputeInitiallyAndOnChange;
+let _recomputeInitiallyAndOnChange: typeof recomputeInitiallyAndOnChange
 export function _setRecomputeInitiallyAndOnChange(
 	recomputeInitiallyAndOnChange: typeof _recomputeInitiallyAndOnChange,
 ) {
-	_recomputeInitiallyAndOnChange = recomputeInitiallyAndOnChange;
+	_recomputeInitiallyAndOnChange = recomputeInitiallyAndOnChange
 }
 
-let _keepObserved: typeof keepObserved;
+let _keepObserved: typeof keepObserved
 export function _setKeepObserved(keepObserved: typeof _keepObserved) {
-	_keepObserved = keepObserved;
+	_keepObserved = keepObserved
 }
 
-let _debugGetObservableGraph: typeof debugGetObservableGraph;
+let _debugGetObservableGraph: typeof debugGetObservableGraph
 export function _setDebugGetObservableGraph(debugGetObservableGraph: typeof _debugGetObservableGraph) {
-	_debugGetObservableGraph = debugGetObservableGraph;
+	_debugGetObservableGraph = debugGetObservableGraph
 }
 
 export abstract class ConvenientObservable<T, TChange> implements IObservableWithChange<T, TChange> {
 	get TChange(): TChange {
-		return null!;
+		return null!
 	}
 
-	public abstract get(): T;
+	public abstract get(): T
 
 	public reportChanges(): void {
-		this.get();
+		this.get()
 	}
 
-	public abstract addObserver(observer: IObserver): void;
-	public abstract removeObserver(observer: IObserver): void;
+	public abstract addObserver(observer: IObserver): void
+	public abstract removeObserver(observer: IObserver): void
 
 	/** @sealed */
 	public read(reader: IReader | undefined): T {
 		if (reader) {
-			return reader.readObservable(this);
+			return reader.readObservable(this)
 		} else {
-			return this.get();
+			return this.get()
 		}
 	}
 
 	/** @sealed */
-	public map<TNew>(fn: (value: T, reader: IReader) => TNew): IObservable<TNew>;
-	public map<TNew>(owner: DebugOwner, fn: (value: T, reader: IReader) => TNew): IObservable<TNew>;
+	public map<TNew>(fn: (value: T, reader: IReader) => TNew): IObservable<TNew>
+	public map<TNew>(owner: DebugOwner, fn: (value: T, reader: IReader) => TNew): IObservable<TNew>
 	public map<TNew>(
 		fnOrOwner: DebugOwner | ((value: T, reader: IReader) => TNew),
 		fnOrUndefined?: (value: T, reader: IReader) => TNew,
 		debugLocation: DebugLocation = DebugLocation.ofCaller(),
 	): IObservable<TNew> {
-		const owner = fnOrUndefined === undefined ? undefined : (fnOrOwner as DebugOwner);
-		const fn = fnOrUndefined === undefined ? (fnOrOwner as (value: T, reader: IReader) => TNew) : fnOrUndefined;
+		const owner = fnOrUndefined === undefined ? undefined : (fnOrOwner as DebugOwner)
+		const fn = fnOrUndefined === undefined ? (fnOrOwner as (value: T, reader: IReader) => TNew) : fnOrUndefined
 
 		return _derived(
 			{
 				owner,
 				debugName: () => {
-					const name = getFunctionName(fn);
+					const name = getFunctionName(fn)
 					if (name !== undefined) {
-						return name;
+						return name
 					}
 
 					// regexp to match `x => x.y` or `x => x?.y` where x and y can be arbitrary identifiers (uses backref):
 					const regexp =
-						/^\s*\(?\s*([a-zA-Z_$][a-zA-Z_$0-9]*)\s*\)?\s*=>\s*\1(?:\??)\.([a-zA-Z_$][a-zA-Z_$0-9]*)\s*$/;
-					const match = regexp.exec(fn.toString());
+						/^\s*\(?\s*([a-zA-Z_$][a-zA-Z_$0-9]*)\s*\)?\s*=>\s*\1(?:\??)\.([a-zA-Z_$][a-zA-Z_$0-9]*)\s*$/
+					const match = regexp.exec(fn.toString())
 					if (match) {
-						return `${this.debugName}.${match[2]}`;
+						return `${this.debugName}.${match[2]}`
 					}
 					if (!owner) {
-						return `${this.debugName} (mapped)`;
+						return `${this.debugName} (mapped)`
 					}
-					return undefined;
+					return undefined
 				},
 				debugReferenceFn: fn,
 			},
 			(reader) => fn(this.read(reader), reader),
 			debugLocation,
-		);
+		)
 	}
 
-	public abstract log(): IObservableWithChange<T, TChange>;
+	public abstract log(): IObservableWithChange<T, TChange>
 
 	/**
 	 * @sealed
@@ -108,12 +108,12 @@ export abstract class ConvenientObservable<T, TChange> implements IObservableWit
 				debugName: () => `${this.debugName} (flattened)`,
 			},
 			(reader) => this.read(reader).read(reader),
-		);
+		)
 	}
 
 	public recomputeInitiallyAndOnChange(store: DisposableStore, handleValue?: (value: T) => void): IObservable<T> {
-		store.add(_recomputeInitiallyAndOnChange!(this, handleValue));
-		return this;
+		store.add(_recomputeInitiallyAndOnChange!(this, handleValue))
+		return this
 	}
 
 	/**
@@ -122,18 +122,18 @@ export abstract class ConvenientObservable<T, TChange> implements IObservableWit
 	 * Use `recomputeInitiallyAndOnChange` for eager evaluation.
 	 */
 	public keepObserved(store: DisposableStore): IObservable<T> {
-		store.add(_keepObserved!(this));
-		return this;
+		store.add(_keepObserved!(this))
+		return this
 	}
 
-	public abstract get debugName(): string;
+	public abstract get debugName(): string
 
 	protected get debugValue() {
-		return this.get();
+		return this.get()
 	}
 
 	get debug(): DebugHelper {
-		return new DebugHelper(this);
+		return new DebugHelper(this)
 	}
 }
 
@@ -141,40 +141,40 @@ class DebugHelper {
 	constructor(public readonly observable: IObservableWithChange<any, any>) {}
 
 	getDependencyGraph(): string {
-		return _debugGetObservableGraph(this.observable, { type: 'dependencies' });
+		return _debugGetObservableGraph(this.observable, { type: 'dependencies' })
 	}
 
 	getObserverGraph(): string {
-		return _debugGetObservableGraph(this.observable, { type: 'observers' });
+		return _debugGetObservableGraph(this.observable, { type: 'observers' })
 	}
 }
 
 export abstract class BaseObservable<T, TChange = void> extends ConvenientObservable<T, TChange> {
-	protected readonly _observers = new Set<IObserver>();
+	protected readonly _observers = new Set<IObserver>()
 
 	constructor(debugLocation: DebugLocation) {
-		super();
-		getLogger()?.handleObservableCreated(this, debugLocation);
+		super()
+		getLogger()?.handleObservableCreated(this, debugLocation)
 	}
 
 	public addObserver(observer: IObserver): void {
-		const len = this._observers.size;
-		this._observers.add(observer);
+		const len = this._observers.size
+		this._observers.add(observer)
 		if (len === 0) {
-			this.onFirstObserverAdded();
+			this.onFirstObserverAdded()
 		}
 		if (len !== this._observers.size) {
-			getLogger()?.handleOnListenerCountChanged(this, this._observers.size);
+			getLogger()?.handleOnListenerCountChanged(this, this._observers.size)
 		}
 	}
 
 	public removeObserver(observer: IObserver): void {
-		const deleted = this._observers.delete(observer);
+		const deleted = this._observers.delete(observer)
 		if (deleted && this._observers.size === 0) {
-			this.onLastObserverRemoved();
+			this.onLastObserverRemoved()
 		}
 		if (deleted) {
-			getLogger()?.handleOnListenerCountChanged(this, this._observers.size);
+			getLogger()?.handleOnListenerCountChanged(this, this._observers.size)
 		}
 	}
 
@@ -182,15 +182,15 @@ export abstract class BaseObservable<T, TChange = void> extends ConvenientObserv
 	protected onLastObserverRemoved(): void {}
 
 	public override log(): IObservableWithChange<T, TChange> {
-		const hadLogger = !!getLogger();
-		logObservable(this);
+		const hadLogger = !!getLogger()
+		logObservable(this)
 		if (!hadLogger) {
-			getLogger()?.handleObservableCreated(this, DebugLocation.ofCaller());
+			getLogger()?.handleObservableCreated(this, DebugLocation.ofCaller())
 		}
-		return this;
+		return this
 	}
 
 	public debugGetObservers() {
-		return this._observers;
+		return this._observers
 	}
 }

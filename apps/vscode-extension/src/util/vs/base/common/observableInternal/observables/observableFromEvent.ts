@@ -1,34 +1,34 @@
-import { IObservable, ITransaction } from '../base';
-import { subtransaction } from '../transaction';
-import { EqualityComparer, Event, IDisposable, strictEquals } from '../commonFacade/deps';
-import { DebugOwner, DebugNameData, IDebugNameData } from '../debugName';
-import { getLogger } from '../logging/logging';
-import { BaseObservable } from './baseObservable';
-import { DebugLocation } from '../debugLocation';
+import { IObservable, ITransaction } from '../base'
+import { EqualityComparer, Event, IDisposable, strictEquals } from '../commonFacade/deps'
+import { DebugLocation } from '../debugLocation'
+import { DebugOwner, DebugNameData, IDebugNameData } from '../debugName'
+import { getLogger } from '../logging/logging'
+import { subtransaction } from '../transaction'
+import { BaseObservable } from './baseObservable'
 
 export function observableFromEvent<T, TArgs = unknown>(
 	owner: DebugOwner,
 	event: Event<TArgs>,
 	getValue: (args: TArgs | undefined) => T,
 	debugLocation?: DebugLocation,
-): IObservable<T>;
+): IObservable<T>
 export function observableFromEvent<T, TArgs = unknown>(
 	event: Event<TArgs>,
 	getValue: (args: TArgs | undefined) => T,
-): IObservable<T>;
+): IObservable<T>
 export function observableFromEvent(
 	...args:
 		| [owner: DebugOwner, event: Event<any>, getValue: (args: any) => any, debugLocation?: DebugLocation]
 		| [event: Event<any>, getValue: (args: any) => any]
 ): IObservable<any> {
-	let owner;
-	let event;
-	let getValue;
-	let debugLocation;
+	let owner
+	let event
+	let getValue
+	let debugLocation
 	if (args.length === 2) {
-		[event, getValue] = args;
+		;[event, getValue] = args
 	} else {
-		[owner, event, getValue, debugLocation] = args;
+		;[owner, event, getValue, debugLocation] = args
 	}
 	return new FromEventObservable(
 		new DebugNameData(owner, undefined, getValue),
@@ -37,13 +37,13 @@ export function observableFromEvent(
 		() => FromEventObservable.globalTransaction,
 		strictEquals,
 		debugLocation ?? DebugLocation.ofCaller(),
-	);
+	)
 }
 
 export function observableFromEventOpts<T, TArgs = unknown>(
 	options: IDebugNameData & {
-		equalsFn?: EqualityComparer<T>;
-		getTransaction?: () => ITransaction | undefined;
+		equalsFn?: EqualityComparer<T>
+		getTransaction?: () => ITransaction | undefined
 	},
 	event: Event<TArgs>,
 	getValue: (args: TArgs | undefined) => T,
@@ -56,15 +56,15 @@ export function observableFromEventOpts<T, TArgs = unknown>(
 		() => options.getTransaction?.() ?? FromEventObservable.globalTransaction,
 		options.equalsFn ?? strictEquals,
 		debugLocation,
-	);
+	)
 }
 
 export class FromEventObservable<TArgs, T> extends BaseObservable<T> {
-	public static globalTransaction: ITransaction | undefined;
+	public static globalTransaction: ITransaction | undefined
 
-	private _value: T | undefined;
-	private _hasValue = false;
-	private _subscription: IDisposable | undefined;
+	private _value: T | undefined
+	private _hasValue = false
+	private _subscription: IDisposable | undefined
 
 	constructor(
 		private readonly _debugNameData: DebugNameData,
@@ -74,34 +74,34 @@ export class FromEventObservable<TArgs, T> extends BaseObservable<T> {
 		private readonly _equalityComparator: EqualityComparer<T>,
 		debugLocation: DebugLocation,
 	) {
-		super(debugLocation);
+		super(debugLocation)
 	}
 
 	private getDebugName(): string | undefined {
-		return this._debugNameData.getDebugName(this);
+		return this._debugNameData.getDebugName(this)
 	}
 
 	public get debugName(): string {
-		const name = this.getDebugName();
-		return 'From Event' + (name ? `: ${name}` : '');
+		const name = this.getDebugName()
+		return 'From Event' + (name ? `: ${name}` : '')
 	}
 
 	protected override onFirstObserverAdded(): void {
-		this._subscription = this.event(this.handleEvent);
+		this._subscription = this.event(this.handleEvent)
 	}
 
 	private readonly handleEvent = (args: TArgs | undefined) => {
-		const newValue = this._getValue(args);
-		const oldValue = this._value;
+		const newValue = this._getValue(args)
+		const oldValue = this._value
 
-		const didChange = !this._hasValue || !this._equalityComparator(oldValue!, newValue);
-		let didRunTransaction = false;
+		const didChange = !this._hasValue || !this._equalityComparator(oldValue!, newValue)
+		let didRunTransaction = false
 
 		if (didChange) {
-			this._value = newValue;
+			this._value = newValue
 
 			if (this._hasValue) {
-				didRunTransaction = true;
+				didRunTransaction = true
 				subtransaction(
 					this._getTransaction(),
 					(tx) => {
@@ -111,20 +111,20 @@ export class FromEventObservable<TArgs, T> extends BaseObservable<T> {
 							change: undefined,
 							didChange,
 							hadValue: this._hasValue,
-						});
+						})
 
 						for (const o of this._observers) {
-							tx.updateObserver(o, this);
-							o.handleChange(this, undefined);
+							tx.updateObserver(o, this)
+							o.handleChange(this, undefined)
 						}
 					},
 					() => {
-						const name = this.getDebugName();
-						return 'Event fired' + (name ? `: ${name}` : '');
+						const name = this.getDebugName()
+						return 'Event fired' + (name ? `: ${name}` : '')
 					},
-				);
+				)
 			}
-			this._hasValue = true;
+			this._hasValue = true
 		}
 
 		if (!didRunTransaction) {
@@ -134,53 +134,53 @@ export class FromEventObservable<TArgs, T> extends BaseObservable<T> {
 				change: undefined,
 				didChange,
 				hadValue: this._hasValue,
-			});
+			})
 		}
-	};
+	}
 
 	protected override onLastObserverRemoved(): void {
-		this._subscription!.dispose();
-		this._subscription = undefined;
-		this._hasValue = false;
-		this._value = undefined;
+		this._subscription!.dispose()
+		this._subscription = undefined
+		this._hasValue = false
+		this._value = undefined
 	}
 
 	public get(): T {
 		if (this._subscription) {
 			if (!this._hasValue) {
-				this.handleEvent(undefined);
+				this.handleEvent(undefined)
 			}
-			return this._value!;
+			return this._value!
 		} else {
 			// no cache, as there are no subscribers to keep it updated
-			const value = this._getValue(undefined);
-			return value;
+			const value = this._getValue(undefined)
+			return value
 		}
 	}
 
 	public debugSetValue(value: unknown): void {
-		this._value = value as any;
+		this._value = value as any
 	}
 
 	public debugGetState() {
-		return { value: this._value, hasValue: this._hasValue };
+		return { value: this._value, hasValue: this._hasValue }
 	}
 }
 
 export namespace observableFromEvent {
-	export const Observer = FromEventObservable;
+	export const Observer = FromEventObservable
 
 	export function batchEventsGlobally(tx: ITransaction, fn: () => void): void {
-		let didSet = false;
+		let didSet = false
 		if (FromEventObservable.globalTransaction === undefined) {
-			FromEventObservable.globalTransaction = tx;
-			didSet = true;
+			FromEventObservable.globalTransaction = tx
+			didSet = true
 		}
 		try {
-			fn();
+			fn()
 		} finally {
 			if (didSet) {
-				FromEventObservable.globalTransaction = undefined;
+				FromEventObservable.globalTransaction = undefined
 			}
 		}
 	}

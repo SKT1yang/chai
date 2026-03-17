@@ -1,65 +1,61 @@
-import { AutorunObserver } from '../reactions/autorunImpl';
-import { IObservable } from '../base';
-import { TransactionImpl } from '../transaction';
-import type { Derived } from '../observables/derivedImpl';
-import { DebugLocation } from '../debugLocation';
+import { IObservable } from '../base'
+import { DebugLocation } from '../debugLocation'
+import type { Derived } from '../observables/derivedImpl'
+import { AutorunObserver } from '../reactions/autorunImpl'
+import { TransactionImpl } from '../transaction'
 
-let globalObservableLogger: IObservableLogger | undefined;
+let globalObservableLogger: IObservableLogger | undefined
 
 export function addLogger(logger: IObservableLogger): void {
 	if (!globalObservableLogger) {
-		globalObservableLogger = logger;
+		globalObservableLogger = logger
 	} else if (globalObservableLogger instanceof ComposedLogger) {
-		globalObservableLogger.loggers.push(logger);
+		globalObservableLogger.loggers.push(logger)
 	} else {
-		globalObservableLogger = new ComposedLogger([globalObservableLogger, logger]);
+		globalObservableLogger = new ComposedLogger([globalObservableLogger, logger])
 	}
 }
 
 export function getLogger(): IObservableLogger | undefined {
-	return globalObservableLogger;
+	return globalObservableLogger
 }
 
-let globalObservableLoggerFn: ((obs: IObservable<any>) => void) | undefined = undefined;
+let globalObservableLoggerFn: ((obs: IObservable<any>) => void) | undefined = undefined
 export function setLogObservableFn(fn: (obs: IObservable<any>) => void): void {
-	globalObservableLoggerFn = fn;
+	globalObservableLoggerFn = fn
 }
 
 export function logObservable(obs: IObservable<any>): void {
 	if (globalObservableLoggerFn) {
-		globalObservableLoggerFn(obs);
+		globalObservableLoggerFn(obs)
 	}
 }
 
 export interface IChangeInformation {
-	oldValue: unknown;
-	newValue: unknown;
-	change: unknown;
-	didChange: boolean;
-	hadValue: boolean;
+	oldValue: unknown
+	newValue: unknown
+	change: unknown
+	didChange: boolean
+	hadValue: boolean
 }
 
 export interface IObservableLogger {
-	handleObservableCreated(observable: IObservable<any>, location: DebugLocation): void;
-	handleOnListenerCountChanged(observable: IObservable<any>, newCount: number): void;
+	handleObservableCreated(observable: IObservable<any>, location: DebugLocation): void
+	handleOnListenerCountChanged(observable: IObservable<any>, newCount: number): void
 
-	handleObservableUpdated(observable: IObservable<any>, info: IChangeInformation): void;
+	handleObservableUpdated(observable: IObservable<any>, info: IChangeInformation): void
 
-	handleAutorunCreated(autorun: AutorunObserver, location: DebugLocation): void;
-	handleAutorunDisposed(autorun: AutorunObserver): void;
-	handleAutorunDependencyChanged(autorun: AutorunObserver, observable: IObservable<any>, change: unknown): void;
-	handleAutorunStarted(autorun: AutorunObserver): void;
-	handleAutorunFinished(autorun: AutorunObserver): void;
+	handleAutorunCreated(autorun: AutorunObserver, location: DebugLocation): void
+	handleAutorunDisposed(autorun: AutorunObserver): void
+	handleAutorunDependencyChanged(autorun: AutorunObserver, observable: IObservable<any>, change: unknown): void
+	handleAutorunStarted(autorun: AutorunObserver): void
+	handleAutorunFinished(autorun: AutorunObserver): void
 
-	handleDerivedDependencyChanged(
-		derived: Derived<any, any, any>,
-		observable: IObservable<any>,
-		change: unknown,
-	): void;
-	handleDerivedCleared(observable: Derived<any, any, any>): void;
+	handleDerivedDependencyChanged(derived: Derived<any, any, any>, observable: IObservable<any>, change: unknown): void
+	handleDerivedCleared(observable: Derived<any, any, any>): void
 
-	handleBeginTransaction(transaction: TransactionImpl): void;
-	handleEndTransaction(transaction: TransactionImpl): void;
+	handleBeginTransaction(transaction: TransactionImpl): void
+	handleEndTransaction(transaction: TransactionImpl): void
 }
 
 class ComposedLogger implements IObservableLogger {
@@ -67,62 +63,62 @@ class ComposedLogger implements IObservableLogger {
 
 	handleObservableCreated(observable: IObservable<any>, location: DebugLocation): void {
 		for (const logger of this.loggers) {
-			logger.handleObservableCreated(observable, location);
+			logger.handleObservableCreated(observable, location)
 		}
 	}
 	handleOnListenerCountChanged(observable: IObservable<any>, newCount: number): void {
 		for (const logger of this.loggers) {
-			logger.handleOnListenerCountChanged(observable, newCount);
+			logger.handleOnListenerCountChanged(observable, newCount)
 		}
 	}
 	handleObservableUpdated(observable: IObservable<any>, info: IChangeInformation): void {
 		for (const logger of this.loggers) {
-			logger.handleObservableUpdated(observable, info);
+			logger.handleObservableUpdated(observable, info)
 		}
 	}
 	handleAutorunCreated(autorun: AutorunObserver, location: DebugLocation): void {
 		for (const logger of this.loggers) {
-			logger.handleAutorunCreated(autorun, location);
+			logger.handleAutorunCreated(autorun, location)
 		}
 	}
 	handleAutorunDisposed(autorun: AutorunObserver): void {
 		for (const logger of this.loggers) {
-			logger.handleAutorunDisposed(autorun);
+			logger.handleAutorunDisposed(autorun)
 		}
 	}
 	handleAutorunDependencyChanged(autorun: AutorunObserver, observable: IObservable<any>, change: unknown): void {
 		for (const logger of this.loggers) {
-			logger.handleAutorunDependencyChanged(autorun, observable, change);
+			logger.handleAutorunDependencyChanged(autorun, observable, change)
 		}
 	}
 	handleAutorunStarted(autorun: AutorunObserver): void {
 		for (const logger of this.loggers) {
-			logger.handleAutorunStarted(autorun);
+			logger.handleAutorunStarted(autorun)
 		}
 	}
 	handleAutorunFinished(autorun: AutorunObserver): void {
 		for (const logger of this.loggers) {
-			logger.handleAutorunFinished(autorun);
+			logger.handleAutorunFinished(autorun)
 		}
 	}
 	handleDerivedDependencyChanged(derived: Derived<any>, observable: IObservable<any>, change: unknown): void {
 		for (const logger of this.loggers) {
-			logger.handleDerivedDependencyChanged(derived, observable, change);
+			logger.handleDerivedDependencyChanged(derived, observable, change)
 		}
 	}
 	handleDerivedCleared(observable: Derived<any>): void {
 		for (const logger of this.loggers) {
-			logger.handleDerivedCleared(observable);
+			logger.handleDerivedCleared(observable)
 		}
 	}
 	handleBeginTransaction(transaction: TransactionImpl): void {
 		for (const logger of this.loggers) {
-			logger.handleBeginTransaction(transaction);
+			logger.handleBeginTransaction(transaction)
 		}
 	}
 	handleEndTransaction(transaction: TransactionImpl): void {
 		for (const logger of this.loggers) {
-			logger.handleEndTransaction(transaction);
+			logger.handleEndTransaction(transaction)
 		}
 	}
 }

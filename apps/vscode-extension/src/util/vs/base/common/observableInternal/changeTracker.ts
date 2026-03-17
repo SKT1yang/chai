@@ -1,20 +1,20 @@
-import { BugIndicatingError } from './commonFacade/deps';
-import { IObservableWithChange, IReader } from './base';
+import { IObservableWithChange, IReader } from './base'
+import { BugIndicatingError } from './commonFacade/deps'
 
 export interface IChangeTracker<TChangeSummary> {
-	createChangeSummary(previousChangeSummary: TChangeSummary | undefined): TChangeSummary;
-	handleChange(ctx: IChangeContext, change: TChangeSummary): boolean;
-	beforeUpdate?(reader: IReader, change: TChangeSummary): void;
+	createChangeSummary(previousChangeSummary: TChangeSummary | undefined): TChangeSummary
+	handleChange(ctx: IChangeContext, change: TChangeSummary): boolean
+	beforeUpdate?(reader: IReader, change: TChangeSummary): void
 }
 
 export interface IChangeContext {
-	readonly changedObservable: IObservableWithChange<any, any>;
-	readonly change: unknown;
+	readonly changedObservable: IObservableWithChange<any, any>
+	readonly change: unknown
 
 	/**
 	 * Returns if the given observable caused the change.
 	 */
-	didChange<T, TChange>(observable: IObservableWithChange<T, TChange>): this is { change: TChange };
+	didChange<T, TChange>(observable: IObservableWithChange<T, TChange>): this is { change: TChange }
 }
 
 /**
@@ -25,7 +25,7 @@ export function recordChanges<TObs extends Record<any, IObservableWithChange<any
 	obs: TObs,
 ): IChangeTracker<
 	{ [TKey in keyof TObs]: ReturnType<TObs[TKey]['get']> } & {
-		changes: readonly { [TKey in keyof TObs]: { key: TKey; change: TObs[TKey]['TChange'] } }[keyof TObs][];
+		changes: readonly { [TKey in keyof TObs]: { key: TKey; change: TObs[TKey]['TChange'] } }[keyof TObs][]
 	}
 > {
 	return {
@@ -33,26 +33,26 @@ export function recordChanges<TObs extends Record<any, IObservableWithChange<any
 			// eslint-disable-next-line local/code-no-any-casts
 			return {
 				changes: [],
-			} as any;
+			} as any
 		},
 		handleChange(ctx, changeSummary) {
 			for (const key in obs) {
 				if (ctx.didChange(obs[key])) {
 					// eslint-disable-next-line local/code-no-any-casts
-					(changeSummary.changes as any).push({ key, change: ctx.change });
+					;(changeSummary.changes as any).push({ key, change: ctx.change })
 				}
 			}
-			return true;
+			return true
 		},
 		beforeUpdate(reader, changeSummary) {
 			for (const key in obs) {
 				if (key === 'changes') {
-					throw new BugIndicatingError('property name "changes" is reserved for change tracking');
+					throw new BugIndicatingError('property name "changes" is reserved for change tracking')
 				}
-				changeSummary[key] = obs[key].read(reader);
+				changeSummary[key] = obs[key].read(reader)
 			}
 		},
-	};
+	}
 }
 
 /**
@@ -63,39 +63,39 @@ export function recordChangesLazy<TObs extends Record<any, IObservableWithChange
 	getObs: () => TObs,
 ): IChangeTracker<
 	{ [TKey in keyof TObs]: ReturnType<TObs[TKey]['get']> } & {
-		changes: readonly { [TKey in keyof TObs]: { key: TKey; change: TObs[TKey]['TChange'] } }[keyof TObs][];
+		changes: readonly { [TKey in keyof TObs]: { key: TKey; change: TObs[TKey]['TChange'] } }[keyof TObs][]
 	}
 > {
-	let obs: TObs | undefined = undefined;
+	let obs: TObs | undefined = undefined
 	return {
 		createChangeSummary: (_previousChangeSummary) => {
 			// eslint-disable-next-line local/code-no-any-casts
 			return {
 				changes: [],
-			} as any;
+			} as any
 		},
 		handleChange(ctx, changeSummary) {
 			if (!obs) {
-				obs = getObs();
+				obs = getObs()
 			}
 			for (const key in obs) {
 				if (ctx.didChange(obs[key])) {
 					// eslint-disable-next-line local/code-no-any-casts
-					(changeSummary.changes as any).push({ key, change: ctx.change });
+					;(changeSummary.changes as any).push({ key, change: ctx.change })
 				}
 			}
-			return true;
+			return true
 		},
 		beforeUpdate(reader, changeSummary) {
 			if (!obs) {
-				obs = getObs();
+				obs = getObs()
 			}
 			for (const key in obs) {
 				if (key === 'changes') {
-					throw new BugIndicatingError('property name "changes" is reserved for change tracking');
+					throw new BugIndicatingError('property name "changes" is reserved for change tracking')
 				}
-				changeSummary[key] = obs[key].read(reader);
+				changeSummary[key] = obs[key].read(reader)
 			}
 		},
-	};
+	}
 }
