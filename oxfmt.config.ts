@@ -1,7 +1,6 @@
-import type { OxfmtConfig } from 'oxfmt'
 import { defineConfig } from 'oxfmt'
 
-export default defineConfig<OxfmtConfig>({
+export default defineConfig({
 	printWidth: 120, // 将打印宽度调整为 120，适配现代宽屏显示器
 	useTabs: true, // 使用制表符进行缩进，而非空格
 	tabWidth: 4, // 设置制表符宽度为 4 （注意！：vscode settings editor.tabSize配置优先级高于此配置）

@@ -25,7 +25,6 @@ export const generateUuid = (function (): () => string {
 	return function generateUuid(): string {
 		// get data
 		crypto.getRandomValues(_data)
-
 		// set version bits
 		_data[6] = (_data[6] & 0x0f) | 0x40
 		_data[8] = (_data[8] & 0x3f) | 0x80
