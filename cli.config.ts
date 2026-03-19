@@ -1,6 +1,4 @@
-import type { CliConfig } from '@shuiyangsuan/cli'
-
-const cliConfig: CliConfig = {
+const cliConfig = {
 	defaultPatterns: [
 		'**/node_modules',
 		'**/dist',
