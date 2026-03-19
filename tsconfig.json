@@ -5,14 +5,16 @@
 		"moduleResolution": "bundler",
 		"target": "ES2022",
 		"lib": ["ES2022"],
+		"tsBuildInfoFile": ".tsbuildinfo",
+
 		"sourceMap": true,
 		"declaration": true,
 		"declarationMap": true,
 		"resolveJsonModule": true,
+
 		"composite": true,
 		"incremental": true,
-		"tsBuildInfoFile": ".tsbuildinfo"
 	},
 	"include": ["scripts/**/*.ts", "*.config.ts"],
-	"exclude": ["node_modules", "dist", ".turbo"]
+	"exclude": ["node_modules", "dist", ".turbo"],
 }
