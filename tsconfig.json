@@ -1,16 +1,11 @@
 {
-	"extends": "@tsconfig/strictest/tsconfig.json",
+	"extends": "@shuiyangsuan/tsconfig/node",
 	"compilerOptions": {
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"target": "ES2022",
-		"lib": ["ES2022"],
-		"tsBuildInfoFile": ".tsbuildinfo",
+		"types": ["node"],
 
 		"sourceMap": true,
 		"declaration": true,
 		"declarationMap": true,
-		"resolveJsonModule": true,
 
 		"composite": true,
 		"incremental": true,

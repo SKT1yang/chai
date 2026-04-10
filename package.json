@@ -11,6 +11,7 @@
 		"postinstall": "npm install @shuiyangsuan/cli -g"
 	},
 	"devDependencies": {
+		"@shuiyangsuan/tsconfig": "catalog:",
 		"@tsconfig/strictest": "catalog:",
 		"@types/bun": "1.3.11",
 		"@types/node": "catalog:",

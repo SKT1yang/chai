@@ -7,6 +7,7 @@ catalog:
     '@tsconfig/strictest': 2.0.8
     '@tsconfig/vite-react': 7.0.2
     '@types/node': 25.5.0
+    '@shuiyangsuan/tsconfig': 0.0.3
 
 onlyBuiltDependencies:
     - '@vscode/vsce-sign'

@@ -1,17 +1,16 @@
 {
-	"extends": "@tsconfig/strictest/tsconfig.json",
+	"extends": "@shuiyangsuan/tsconfig/node",
 	"compilerOptions": {
-		"target": "ES2022",
-		"lib": ["ES2022", "ESNext.Disposable", "DOM"],
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
+		"lib": ["ESNext.Disposable", "DOM"],
 		"types": ["node"],
+
 		"exactOptionalPropertyTypes": false,
 		"useUnknownInCatchVariables": false,
+
 		"experimentalDecorators": true,
 		"useDefineForClassFields": true,
-		"sourceMap": true
+		"sourceMap": true,
 	},
 	"include": ["src"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
 }

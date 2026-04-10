@@ -1,9 +1,4 @@
 {
-	"extends": "@tsconfig/vite-react/tsconfig.json",
-	"compilerOptions": {
-		"target": "ES2023",
-		"lib": ["ES2023", "DOM", "DOM.Iterable"],
-		"types": ["vite/client"]
-	},
-	"include": ["src"]
+	"extends": "@shuiyangsuan/tsconfig/vite-react",
+	"include": ["src"],
 }
