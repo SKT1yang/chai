@@ -2,10 +2,14 @@ import axios from 'axios'
 import type { ExtensionContext } from 'vscode'
 import * as vscode from 'vscode'
 
-import { getNonce } from '../common/getNonce'
+import { getNonce } from './getNonce'
 
 export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
-	constructor(private readonly extensionContext: ExtensionContext) {}
+	private readonly extensionContext: ExtensionContext
+
+	constructor(extensionContext: ExtensionContext) {
+		this.extensionContext = extensionContext
+	}
 
 	public async resolveWebviewView(
 		webviewView: vscode.WebviewView,

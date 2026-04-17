@@ -50,13 +50,11 @@
 		"install-extension": "code --install-extension chai.vsix --force"
 	},
 	"dependencies": {
-		"@vscode/prompt-tsx": "0.4.0-alpha.7",
-		"axios": "1.13.6",
+		"axios": "^1.15.0",
 		"vscode-uri": "3.1.0"
 	},
 	"devDependencies": {
 		"@chai/webview": "workspace:",
-		"@tsconfig/strictest": "catalog:",
 		"@types/node": "catalog:",
 		"@types/vscode": "1.109.0",
 		"@vscode/vsce": "3.7.1",

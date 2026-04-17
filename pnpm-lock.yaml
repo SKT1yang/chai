@@ -9,12 +9,6 @@ catalogs:
     '@shuiyangsuan/tsconfig':
       specifier: 0.0.3
       version: 0.0.3
-    '@tsconfig/strictest':
-      specifier: 2.0.8
-      version: 2.0.8
-    '@tsconfig/vite-react':
-      specifier: 7.0.2
-      version: 7.0.2
     '@types/node':
       specifier: 25.5.0
       version: 25.5.0
@@ -29,9 +23,6 @@ importers:
       '@shuiyangsuan/tsconfig':
         specifier: 'catalog:'
         version: 0.0.3
-      '@tsconfig/strictest':
-        specifier: 'catalog:'
-        version: 2.0.8
       '@types/bun':
         specifier: 1.3.11
         version: 1.3.11
@@ -59,12 +50,9 @@ importers:
 
   apps/vscode-extension:
     dependencies:
-      '@vscode/prompt-tsx':
-        specifier: 0.4.0-alpha.7
-        version: 0.4.0-alpha.7
       axios:
-        specifier: 1.13.6
-        version: 1.13.6
+        specifier: ^1.15.0
+        version: 1.15.0
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
@@ -72,9 +60,6 @@ importers:
       '@chai/webview':
         specifier: 'workspace:'
         version: link:../vscode-webview
-      '@tsconfig/strictest':
-        specifier: 'catalog:'
-        version: 2.0.8
       '@types/node':
         specifier: 'catalog:'
         version: 25.5.0
@@ -109,12 +94,6 @@ importers:
       '@eslint/js':
         specifier: 10.0.1
         version: 10.0.1(eslint@10.0.3)
-      '@tsconfig/strictest':
-        specifier: 'catalog:'
-        version: 2.0.8
-      '@tsconfig/vite-react':
-        specifier: 'catalog:'
-        version: 7.0.2
       '@types/node':
         specifier: 'catalog:'
         version: 25.5.0
@@ -1264,12 +1243,6 @@ packages:
   '@textlint/types@15.5.2':
     resolution: {integrity: sha512-sJOrlVLLXp4/EZtiWKWq9y2fWyZlI8GP+24rnU5avtPWBIMm/1w97yzKrAqYF8czx2MqR391z5akhnfhj2f/AQ==}
 
-  '@tsconfig/strictest@2.0.8':
-    resolution: {integrity: sha512-XnQ7vNz5HRN0r88GYf1J9JJjqtZPiHt2woGJOo2dYqyHGGcd6OLGqSlBB6p1j9mpzja6Oe5BoPqWmeDx6X9rLw==}
-
-  '@tsconfig/vite-react@7.0.2':
-    resolution: {integrity: sha512-lEj4y5SPRcH+bjw0tyuxrEnPqQUwfQzBKgd1YamD9xyet9zLwh2gwy5F8w/Nxg5DjdgYVjjKo5aLJUf0BTDz4w==}
-
   '@turbo/darwin-64@2.8.19':
     resolution: {integrity: sha512-WNzpqJV7rO/oKmsxjtSFXuV87fZb/qxzeGWXJng4oHFz7iPOFSWrPb2gTazJgoTvXUfe1kOH2o0F+zFrerwzRw==}
     cpu: [x64]
@@ -1538,9 +1511,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@vscode/prompt-tsx@0.4.0-alpha.7':
-    resolution: {integrity: sha512-RTPK3KJEiIcgGd0299p2hp/zPTlp61+zZFmRiA2zbJn8BNgKtCtMn+DJwtH45Z2YDi1hBZpKz8m/NHy3pfB6sw==}
-
   '@vscode/vsce-sign-alpine-arm64@2.0.6':
     resolution: {integrity: sha512-wKkJBsvKF+f0GfsUuGT0tSW0kZL87QggEiqNqK6/8hvqsXvpx8OsTEc3mnE1kejkh5r+qUyQ7PtF8jZYN0mo8Q==}
     cpu: [arm64]
@@ -1644,8 +1614,8 @@ packages:
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  axios@1.13.6:
-    resolution: {integrity: sha512-ChTCHMouEe2kn713WHbQGcuYrr6fXTBiu460OTwWrWob16g1bXn4vtz07Ope7ewMozJAnEquLk5lWQWtBig9DQ==}
+  axios@1.15.0:
+    resolution: {integrity: sha512-wWyJDlAatxk30ZJer+GeCWS209sA42X+N5jU2jy6oHTp7ufw8uzUTVFBX9+wTfAlhiJXGS0Bq7X6efruWjuK9Q==}
 
   azure-devops-node-api@12.5.0:
     resolution: {integrity: sha512-R5eFskGvOm3U/GzeAuxRkUsAl0hrAwGgWn6zAd2KrZmrEhWZVqLew4OOupbQlXUuojUzpGtq62SmdhJ06N88og==}
@@ -2659,8 +2629,9 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  proxy-from-env@1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
 
   pump@3.0.4:
     resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
@@ -3984,10 +3955,6 @@ snapshots:
     dependencies:
       '@textlint/ast-node-types': 15.5.2
 
-  '@tsconfig/strictest@2.0.8': {}
-
-  '@tsconfig/vite-react@7.0.2': {}
-
   '@turbo/darwin-64@2.8.19':
     optional: true
 
@@ -4218,8 +4185,6 @@ snapshots:
   '@voidzero-dev/vite-plus-win32-x64-msvc@0.1.12':
     optional: true
 
-  '@vscode/prompt-tsx@0.4.0-alpha.7': {}
-
   '@vscode/vsce-sign-alpine-arm64@2.0.6':
     optional: true
 
@@ -4337,11 +4302,11 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios@1.13.6:
+  axios@1.15.0:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.5
-      proxy-from-env: 1.1.0
+      proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
 
@@ -5436,7 +5401,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  proxy-from-env@1.1.0: {}
+  proxy-from-env@2.1.0: {}
 
   pump@3.0.4:
     dependencies:

@@ -15,8 +15,6 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "10.0.1",
-		"@tsconfig/strictest": "catalog:",
-		"@tsconfig/vite-react": "catalog:",
 		"@types/node": "catalog:",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
