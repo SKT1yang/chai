@@ -4,7 +4,6 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun scripts/build-vscode.ts",
-		"dev": "pnpm --filter @chai/webview dev & pnpm --filter @chai/vscode watch:compile",
 		"clean": "by delete",
 		"check": "pnpm lint && pnpm fmt",
 		"lint": "oxlint --type-check --type-aware -c oxlint.config.ts",
