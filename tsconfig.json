@@ -2,7 +2,6 @@
 	"extends": "@shuiyangsuan/tsconfig/node",
 	"compilerOptions": {
 		"types": ["node"],
-
 		"sourceMap": true,
 		"declaration": true,
 		"declarationMap": true,

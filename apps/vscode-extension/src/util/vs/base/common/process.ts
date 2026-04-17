@@ -1,4 +1,4 @@
-import { INodeProcess, isMacintosh, isWindows } from './platform'
+import { type INodeProcess, isMacintosh, isWindows } from './platform'
 
 let safeProcess: Omit<INodeProcess, 'arch'> & { arch: string | undefined }
 declare const process: INodeProcess

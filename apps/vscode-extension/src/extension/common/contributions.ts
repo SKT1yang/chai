@@ -1,7 +1,7 @@
 import { ILogService } from '../../platform/log/common/logService'
 import { Disposable, isDisposable } from '../../util/vs/base/common/lifecycle'
 import { StopWatch } from '../../util/vs/base/common/stopwatch'
-import { ServicesAccessor, IInstantiationService } from '../../util/vs/instantiation/common/instantiation'
+import { type ServicesAccessor, IInstantiationService } from '../../util/vs/instantiation/common/instantiation'
 
 export interface IExtensionContribution {
 	id?: string
@@ -50,7 +50,7 @@ export class ContributionCollection extends Disposable {
 					this._register(instance)
 				}
 
-				if (instance?.activationBlocker) {
+				if (instance && instance?.activationBlocker) {
 					const sw = StopWatch.create()
 					const id = instance.id || 'UNKNOWN'
 					this.allActivationBlockers.push(

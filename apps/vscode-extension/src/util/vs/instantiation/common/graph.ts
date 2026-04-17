@@ -1,17 +1,21 @@
 export class Node<T> {
 	readonly incoming = new Map<string, Node<T>>()
 	readonly outgoing = new Map<string, Node<T>>()
+	readonly key: string
+	readonly data: T
 
-	constructor(
-		readonly key: string,
-		readonly data: T,
-	) {}
+	constructor(key: string, data: T) {
+		this.key = key
+		this.data = data
+	}
 }
 
 export class Graph<T> {
 	private readonly _nodes = new Map<string, Node<T>>()
+	private readonly _hashFn: (element: T) => string
 
-	constructor(private readonly _hashFn: (element: T) => string) {
+	constructor(hashFn: (element: T) => string) {
+		this._hashFn = hashFn
 		// empty
 	}
 

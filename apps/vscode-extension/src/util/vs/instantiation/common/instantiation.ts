@@ -122,5 +122,5 @@ export function createDecorator<T>(serviceId: string): ServiceIdentifier<T> {
 export function refineServiceDecorator<T1, T extends T1>(
 	serviceIdentifier: ServiceIdentifier<T1>,
 ): ServiceIdentifier<T> {
-	return <ServiceIdentifier<T>>serviceIdentifier
+	return serviceIdentifier as <ServiceIdentifier<T>>
 }

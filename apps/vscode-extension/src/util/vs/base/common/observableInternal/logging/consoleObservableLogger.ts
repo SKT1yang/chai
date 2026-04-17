@@ -1,10 +1,10 @@
-import { IObservable } from '../base'
+import { type IObservable } from '../base'
 import { getClassName } from '../debugName'
 import { Derived } from '../observables/derivedImpl'
 import { FromEventObservable } from '../observables/observableFromEvent'
 import { AutorunObserver } from '../reactions/autorunImpl'
 import { TransactionImpl } from '../transaction'
-import { IObservableLogger, IChangeInformation, addLogger } from './logging'
+import { type IObservableLogger, type IChangeInformation, addLogger } from './logging'
 
 let consoleObservableLogger: ConsoleObservableLogger | undefined
 
@@ -332,6 +332,7 @@ export function formatValue(value: unknown, availableLen: number): string {
 		case 'function':
 			return `[[Function${value.name ? ' ' + value.name : ''}]]`
 		default:
+			// oxlint-disable-next-line typescript/no-base-to-string
 			return '' + value
 	}
 }

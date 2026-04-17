@@ -3,7 +3,11 @@ import { Constants } from '../uint'
 import { DiffChange } from './diffChange'
 
 export class StringDiffSequence implements ISequence {
-	constructor(private source: string) {}
+	private source: string
+
+	constructor(source: string) {
+		this.source = source
+	}
 
 	getElements(): Int32Array | number[] | string[] {
 		const source = this.source
@@ -123,8 +127,8 @@ class MyArray {
 // Our total memory usage for storing history is (worst-case):
 // 2 * [(MaxDifferencesHistory + 1) * (MaxDifferencesHistory + 1) - 1] * sizeof(int)
 // 2 * [1448*1448 - 1] * 4 = 16773624 = 16MB
-const enum LocalConstants {
-	MaxDifferencesHistory = 1447,
+const LocalConstants = {
+	MaxDifferencesHistory: 1447,
 }
 
 /**

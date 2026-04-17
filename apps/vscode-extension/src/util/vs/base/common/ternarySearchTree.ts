@@ -355,10 +355,10 @@ export class TernarySearchTree<K, V> {
 			const arr = keys.slice(0)
 			shuffle(arr)
 			for (const k of arr) {
-				this.set(k, <V>values)
+				this.set(k, values as V)
 			}
 		} else {
-			const arr = (<[K, V][]>values).slice(0)
+			const arr = (values as [K, V][]).slice(0)
 			shuffle(arr)
 			for (const entry of arr) {
 				this.set(entry[0], entry[1])

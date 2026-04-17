@@ -7,6 +7,11 @@
 		"exactOptionalPropertyTypes": false,
 		"useUnknownInCatchVariables": false,
 
+		// todo: enable strictNullChecks
+		"strictNullChecks": false,
+		"noImplicitReturns": false,
+		"noUnusedParameters": false,
+
 		"experimentalDecorators": true,
 		"useDefineForClassFields": true,
 		"sourceMap": true,
