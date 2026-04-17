@@ -1,7 +1,8 @@
 {
-	"name": "chai",
+	"name": "@chai/vscode",
 	"displayName": "Chai",
 	"version": "0.0.1",
+	"private": true,
 	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
 	"categories": [
 		"AI",
@@ -88,7 +89,7 @@
 	"activationEvents": [],
 	"icon": "assets/chai.png",
 	"engines": {
-		"vscode": "1.109.0"
+		"vscode": "^1.109.0"
 	},
 	"vsce": {
 		"dependencies": false

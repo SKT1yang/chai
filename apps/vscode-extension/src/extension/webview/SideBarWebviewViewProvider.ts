@@ -27,8 +27,6 @@ export class SideBarWebviewViewProvider implements vscode.WebviewViewProvider {
 			this.extensionContext.extensionMode === vscode.ExtensionMode.Development
 				? await this.getHMRHtmlContent(webviewView.webview)
 				: this.getHtmlContent(webviewView.webview)
-
-		await this.getHMRHtmlContent(webviewView.webview)
 	}
 
 	private getHtmlContent(webview: vscode.Webview): string {

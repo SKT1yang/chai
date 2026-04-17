@@ -6,10 +6,10 @@ console.log('🚀 Starting parallel build...')
 
 try {
 	// 并行运行两个任务
-	await Promise.all([$`pnpm --filter chai compile`, $`pnpm --filter @chai/webview build`])
+	await Promise.all([$`pnpm --filter @chai/vscode compile`, $`pnpm --filter @chai/webview build`])
 
 	console.log('✅ Both compile and build completed. Running package step...')
-	await $`pnpm --filter chai package`
+	await $`pnpm --filter @chai/vscode package`
 	console.log('🎉 Packaging succeeded!')
 } catch (error) {
 	console.error('❌ Build failed:', error)

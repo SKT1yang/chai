@@ -1,17 +1,19 @@
-// A launch configuration that compiles the extension and then opens it inside a new window
-// Use IntelliSense to learn about possible attributes.
-// Hover to view descriptions of existing attributes.
-// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+// VS Code 调试配置文件
+// 用于配置 F5 调试行为,包括扩展宿主和 Webview 的调试
 {
 	"version": "0.2.0",
 	"configurations": [
 		{
+			// 配置名称：运行扩展(含 Webview)
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
-			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+			// 扩展开发路径：指向 vscode-extension 目录
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"],
+			// 输出文件匹配模式：用于调试时的源码映射
 			"outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
-			"preLaunchTask": "${defaultBuildTask}"
-		}
-	]
+			// 调试前任务：启动所有开发服务器(扩展编译 + Webview)
+			"preLaunchTask": "${defaultBuildTask}",
+		},
+	],
 }
