@@ -1,23 +1,91 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
+// VS Code 任务配置文件
 {
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "npm: dev",
-			"type": "npm",
-			"script": "dev",
+			// VS Code 扩展编译监听任务（使用 Rolldown）
+			"label": "Watch VSCode Extension",
+			"type": "shell",
+			"command": "pnpm",
+			"args": ["watch:compile"],
+			"options": {
+				"cwd": "${workspaceFolder}/apps/vscode-extension", // 工作目录：vscode-extension 应用
+			},
 			"group": {
 				"kind": "build",
-				"isDefault": true
 			},
-			"problemMatcher": "$tsc-watch",
-			"isBackground": true,
-
+			"problemMatcher": {
+				"owner": "typescript",
+				"fileLocation": ["relative", "${workspaceFolder}/apps/vscode-extension"],
+				"pattern": [
+					{
+						"regexp": "^\\s*\\[(\\w+)\\]\\s+Error:\\s+(.+)$", // TypeScript 编译错误匹配
+						"code": 1,
+						"message": 2,
+						"file": 2,
+						"location": 2,
+					},
+				],
+				"background": {
+					// 后台任务状态识别：用于判断 Rolldown 编译周期
+					"activeOnStart": true,
+					"beginsPattern": "^> rolldown -c rolldown.config.ts$", // 开始：Rolldown 启动
+					"endsPattern": "^✔ Rebuilt dist/main\\.js in \\d+\\.\\d+ ms\\.", // 结束：编译完成
+				},
+			},
+			"isBackground": true, // 后台任务：持续运行不自动结束
 			"presentation": {
 				"group": "watch",
-				"reveal": "never"
-			}
-		}
-	]
+				"reveal": "never",
+			},
+		},
+		{
+			// Webview 前端开发服务器（使用 Vite）
+			"label": "Start Webview Dev Server",
+			"type": "shell",
+			"command": "pnpm",
+			"args": ["dev"],
+			"options": {
+				"cwd": "${workspaceFolder}/apps/vscode-webview", // 工作目录：vscode-webview 应用
+			},
+			"detail": "vite",
+			"isBackground": true, // 后台任务：持续提供开发服务
+			"problemMatcher": {
+				"owner": "vite",
+				"pattern": [
+					// Vite 多行错误信息匹配
+					{
+						"regexp": "^\\d+:\\d+:\\d+\\s+\\[vite\\+\\]\\s+\\([^)]+\\)\\s+(\\w+\\s+error):\\s+(.+)$", // 第一行：错误类型和消息
+						"message": 2,
+						"code": 1,
+					},
+					{
+						"regexp": "^\\s*File:\\s+(.+?):(\\d+):(\\d+)$", // 第二行：文件位置和行列号
+						"file": 1,
+						"line": 2,
+						"column": 3,
+					},
+				],
+				"background": {
+					// 后台任务状态识别：用于判断 Vite 服务器就绪
+					"activeOnStart": true,
+					"beginsPattern": "vp dev", // 开始：Vite 启动
+					"endsPattern": "Local:", // 结束：服务器就绪可访问
+				},
+			},
+			"presentation": {
+				"group": "watch",
+				"reveal": "never",
+			},
+		},
+		{
+			// 组合任务：一键启动所有开发服务器
+			"label": "Start All Dev Servers",
+			"dependsOn": ["Start Webview Dev Server", "Watch VSCode Extension"], // 依赖的后台任务
+			"group": {
+				"kind": "build",
+				"isDefault": true, // 默认构建任务，可通过快捷键触发
+			},
+		},
+	],
 }
